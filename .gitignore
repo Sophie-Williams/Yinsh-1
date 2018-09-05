@@ -33,3 +33,7 @@
 
 *.py
 *.txt
+main
+
+# Custom
+.vscode/
