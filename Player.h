@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #define bestAction pair<double, vector<Move>>
+#define INF 1e9+7
 
 #include "Game.h"
 #include "Move.h"
@@ -14,12 +15,23 @@ class Player
     /** 
      * The Game state maintained by our player
      */
-    Game game;
+    Game *game;
 
     /**
-     * Returns the best Action to perform from the current game state
+     * Type of me
+     * Player 0 (1) or Player 1 (-1)
      */
-    bestAction max_value(int depth);
+    int player;
+
+    /**
+     * Returns the best Action to perform from the current game state for current player
+     */
+    bestAction maxValue(int depth);
+
+    /**
+     * Returns the best Action to perform from the current game state for opponent player
+     */
+    bestAction minValue(int depth);
 
     /**
      * Takes in input for the opponent's move
@@ -32,7 +44,7 @@ class Player
      * @Constructor
      * Input: Player 0 (1) or Player 1 (-1)
      */
-    Player(int playerType);
+    Player(int playerType, int numRings);
 
     /**
      * Game playing function

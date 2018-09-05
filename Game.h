@@ -15,7 +15,7 @@ class Game
     int numRingsForRow;
 
     // Game Board
-    int **board;
+    int **board; // 0: Empty | 1: Positive Marker | 2: Positive Ring | -1: Negative Marker | -2: Negative Ring
     vector<pair<int, int>> ringsPositive; // Positions of rings of the positive player
     vector<pair<int, int>> ringsNegative; // Positions of rings of the positive player
 
@@ -26,8 +26,21 @@ class Game
   public:
     /**
      * @constructor
+     * Makes an empty board of given specification
+     * Initializes the game to appropriate game state
      */
-    Game();
+    // Game();
+    Game(int numberOfRings);
+
+    /**
+     * Returns the `playerToMove`
+     */
+    int getPlayerToMove ();
+
+    /**
+     * Returns the `gameState`
+     */
+    int getGameState ();
 
     /**
      * Return all the moves that the `playerToMove` can play from the given state 
