@@ -33,3 +33,5 @@
 
 *.py
 *.txt
+*.json
+*.js
