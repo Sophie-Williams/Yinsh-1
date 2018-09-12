@@ -1,0 +1,2 @@
+1. isTerminalState() is used in begining of your move in minmax. Obviously it's not a win state if you are able to move.
+    Maybe check for opponent win?

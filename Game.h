@@ -1,12 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define contiguousMarkers vector<pair< pair<int, int>, pair<int, int> >>
+
 #include <vector>
 #include <iostream>
 #include <iomanip>
 #include "Move.h"
 #include "MicroMove.h"
 using namespace std;
+
 
 class Game
 {
@@ -19,23 +22,24 @@ class Game
 
     // Game Board
     int **board; // 0: Empty | 1: Positive Marker | 2: Positive Ring | -1: Negative Marker | -2: Negative Ring
-	int **nrows; // -7: illegal, n: number of possible rows of numRingsForRow rings at (i,j)
-	int **playerPos; // number of player 0's rings controlling each square
-	int **playerNeg; // number of player 1's rings controlling each square
+    int **nrows; // -7: illegal, n: number of possible rows of numRingsForRow rings at (i,j)
+    int **playerPos; // number of player 0's rings controlling each square
+    int **playerNeg; // number of player 1's rings controlling each square
 	
     vector<pair<int, int>> ringsPositive; // Positions of rings of the positive player
     vector<pair<int, int>> ringsNegative; // Positions of rings of the positive player
 
-	vector<pair<int,int>> x_lims; // limits of i-th row along x-axis
-	vector<pair<int,int>> y_lims; // limits of i-th row along y-axis
-	vector<pair<int,int>> xy_lims; // limits of i-th row along xy-axis (x - y = constant)
+    vector<pair<int,int>> x_lims; // limits of i-th row along x-axis
+    vector<pair<int,int>> y_lims; // limits of i-th row along y-axis
+    vector<pair<int,int>> xy_lims; // limits of i-th row along xy-axis (x - y = constant)
 	
-	int getOverlaps(int l, int r, int pt);
+	  int getOverlaps(int l, int r, int pt);
 	
-    // Game State
-	int playerAssgn; // 0 means first move, 1 means second move
+    // Game State (from point of view of both players)
+  	int playerAssgn; // 0 means first move, 1 means second move
     int playerToMove; // -1 or 1
-    int gameState;    // 1: Place Ring | 2: Select Ring and Move Ring | 3: Remove a Row | 4: Remove a Ring
+    int gameStatePos;    // 1: Place Ring | 2: Select Ring and Move Ring | 3: Remove a Row | 4: Remove a Ring
+    int gameStateNeg;    // 1: Place Ring | 2: Select Ring and Move Ring | 3: Remove a Row | 4: Remove a Ring
 
   public:
     /**
@@ -45,7 +49,7 @@ class Game
      */
     // Game();
 	
-	Game(int numberOfRings, int playerType);
+	  Game(int numberOfRings, int playerType);
 
     /**
      * Returns the `playerToMove`
@@ -60,7 +64,7 @@ class Game
     /**
      * Looks at the board configuration and playerToMove, and updates the game state
      */
-    void updateGameState();
+    void updateGameState(int player);
 
     /**
      * Return all the moves that the `playerToMove` can play from the given state 
@@ -149,6 +153,11 @@ class Game
      * Returns whether the current game state is a win for the `playerToMove`
      */
     bool isTerminalState();
+
+    /**
+     * Returns an array of all continous streak of markers of player
+     */
+    contiguousMarkers getAllContiguousMarkers (int player);
 	
 	/**
 	 * Displays current board state
