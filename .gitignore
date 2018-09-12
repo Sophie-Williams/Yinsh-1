@@ -33,7 +33,11 @@
 
 *.py
 *.txt
+*.json
+*.js
+
 main
 
 # Custom
 .vscode/
+

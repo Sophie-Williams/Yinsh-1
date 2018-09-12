@@ -8,8 +8,8 @@ bool testerUtility ();
 
 int main(int argc, char **argv)
 {
-    testerUtility();
-    return 0;
+    // testerUtility();
+	// return 0;
 
 
     int player;
@@ -22,7 +22,10 @@ int main(int argc, char **argv)
 
     // Spawn an instance of Player and play the game
     Player *yinsh = new Player(player, N);
-    yinsh->playGame();
+    // yinsh->playGame();
+	// yinsh -> game -> displayBoard();
+	// yinsh -> game -> dispLims();
+	yinsh -> game -> displayNrows();
 
     return 0;
 }

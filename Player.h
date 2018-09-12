@@ -12,11 +12,6 @@ using namespace std;
 class Player
 {
   private:
-    /** 
-     * The Game state maintained by our player
-     */
-    Game *game;
-
     /**
      * Type of me
      * Player 0 (1) or Player 1 (-1)
@@ -40,6 +35,11 @@ class Player
     void playOpponentMove();
 
   public:
+	/** 
+     * The Game state maintained by our player - TEMPORARY
+     */
+    Game *game;
+
     /**
      * @Constructor
      * Input: Player 0 (1) or Player 1 (-1)
