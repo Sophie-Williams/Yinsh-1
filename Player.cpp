@@ -7,7 +7,7 @@ Player::Player(int playerType, int numRings)
     player = playerType;
 
     // Initialise the game instance
-    game = new Game(numRings);
+    game = new Game(numRings, playerType);
 }
 
 bestAction Player::maxValue(int depth)
