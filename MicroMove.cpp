@@ -1,5 +1,6 @@
 #include "MicroMove.h"
 #include "Utility.h"
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -35,6 +36,7 @@ string MicroMove::cartesianToPolarString()
         return "X " + to_string(polarMoveInfo[0].first) + " " + to_string(polarMoveInfo[0].second) + " ";
 
     default:
+        cerr << "Invalid type of move in MicroMove::cartesianToPolarString\n";
         return "";
     }
 }

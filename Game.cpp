@@ -342,6 +342,7 @@ bool Game::makeMicroMove(MicroMove move)
 		break;
 	default:
 		// None of the above types of moves
+		cerr << "Invalid move given to Game::makeMicroMove()\n";
 		return false;
 	}
 }
@@ -369,6 +370,7 @@ bool Game::unmakeMicroMove(MicroMove move)
 		break;
 	default:
 		// None of the above types of moves
+		cerr << "Invalid Move given to Game::unmakeMicroMove()\n";
 		return false;
 	}
 }
@@ -628,9 +630,188 @@ pair<int, int> Game::nextPosition(pair<int, int> position, pair<int, bool> trave
 	}
 }
 
-vector<Move> Game::getAllMoves()
+vector<MicroMove> Game::getAllMoves(int player)
 {
-	return vector<Move>();
+	// Gets all the possible moves from the current state
+	int stateOfGame = (player > 0) ? gameStatePos : gameStateNeg;
+	switch (stateOfGame)
+	{
+	case 1:
+		// Have to place ring
+		return getAllPlaceRingMoves(player);
+	case 2:
+		// Have to select and move a ring
+		return getAllSelectMoveMoves(player);
+	case 3:
+		// Have to remove a row
+		return getAllRemoveRowMoves(player);
+	case 4:
+		// Remove a ring
+		return getAllRemoveRingMoves(player);
+	default:
+		// Return empty
+		cerr << "Game state invalid in Game::getAllMoves()\n";
+		return vector<MicroMove>();
+	}
+}
+
+vector<MicroMove> Game::getAllPlaceRingMoves(int player)
+{
+	// Iterate the board to find an empty position => Make a move out of it
+	vector<MicroMove> possibleMoves;
+	for (int i = 0; i < boardSize; i++)
+	{
+		for (int j = 0; j < boardSize; j++)
+		{
+			if (board[i][j] == 0)
+			{
+				// Insert it
+				vector<pair<int, int>> moveInfo(1, make_pair(i, j));
+				MicroMove move = MicroMove('P', moveInfo, boardSize);
+				possibleMoves.push_back(move);
+			}
+		}
+	}
+}
+
+vector<MicroMove> Game::getAllRemoveRingMoves(int player)
+{
+	// Iterate through the players rings and return corresponding remove moves
+	vector<MicroMove> possibleMoves;
+	vector<pair<int, int>> rings = (player > 0) ? ringsPositive : ringsNegative;
+	// Iterate through all rings
+	for (auto it = rings.begin(); it != rings.end(); it++)
+	{
+		// Insert it
+		vector<pair<int, int>> moveInfo(1, make_pair((*it).first, (*it).second));
+		MicroMove move = MicroMove('X', moveInfo, boardSize);
+		possibleMoves.push_back(move);
+	}
+
+	return possibleMoves;
+}
+
+vector<MicroMove> Game::getAllRemoveRowMoves(int player)
+{
+	// Find all contiguous rows and transform them into corresponding move to remove
+	contiguousMarkers markersArr = getAllContiguousMarkers(player);
+	vector<MicroMove> possibleMoves;
+	for (auto conMarker = markersArr.begin(); conMarker != markersArr.end(); conMarker++)
+	{
+		// Insert it
+		vector<pair<int, int>> moveInfo;
+		moveInfo.push_back((*conMarker).first);
+		moveInfo.push_back((*conMarker).second);
+		MicroMove move = MicroMove('R', moveInfo, boardSize);
+		possibleMoves.push_back(move);
+	}
+
+	return possibleMoves;
+}
+
+vector<MicroMove> Game::getAllSelectMoveMoves(int player)
+{
+	// Select a ring and find all possible destinations
+	vector<MicroMove> possibleMoves;
+	vector<pair<int, int>> rings = (player > 0) ? ringsPositive : ringsNegative;
+	for (auto ring = rings.begin(); ring != rings.end(); ring++)
+	{
+		// Iterate in all directions and get possible directions
+		for (int direc = 0; direc < 6; direc++)
+		{
+			vector<pair<int, int>> destinations = getAllPossibleDestinationsInDirection(*ring, direc);
+
+			for (auto dest = destinations.begin(); dest != destinations.end(); dest++)
+			{
+				// Make a move out of it
+				vector<pair<int, int>> moveInfo;
+				moveInfo.push_back(*ring);
+				moveInfo.push_back(*dest);
+				MicroMove move = MicroMove('M', moveInfo, boardSize);
+				possibleMoves.push_back(move);
+			}
+		}
+	}
+
+	return possibleMoves;
+}
+
+vector<pair<int, int>> Game::getAllPossibleDestinationsInDirection(pair<int, int> ringPos, int direc)
+{
+	// Traverse in the given direction and get destinations
+	vector<pair<int, int>> destinations;
+
+	bool hasSkipped = false; // has it skipped a row of markers till yet
+
+	// Move one step in the direction
+	ringPos = advanceInDirection(ringPos, direc);
+	while (!isOutOfBounds(ringPos))
+	{
+		int x = ringPos.first, y = ringPos.second;
+
+		if (board[x][y] == -7)
+			break; // reached the edge
+
+		if (board[x][y] == 0)
+		{
+			// A destination
+			destinations.push_back(make_pair(x, y));
+			if (hasSkipped)
+				break; // Has skipped so have to stop here
+		}
+		else
+		{
+			// This is a marker
+			hasSkipped = true;
+		}
+
+		// Move forward
+		ringPos = advanceInDirection(ringPos, direc);
+	}
+
+	return destinations;
+}
+
+bool Game::isOutOfBounds(pair<int, int> pos)
+{
+	return (pos.first < 0 || pos.first >= boardSize || pos.second < 0 || pos.second >= boardSize);
+}
+
+pair<int, int> Game::advanceInDirection(pair<int, int> pos, int direc)
+{
+	// Direc is anticlockwise
+	switch (direc)
+	{
+	case 0:
+		// +Y
+		pos.second++;
+		return pos;
+	case 1:
+		// -X
+		pos.first--;
+		return pos;
+	case 2:
+		// -(X+Y)
+		pos.first--;
+		pos.second--;
+		return pos;
+	case 3:
+		// -Y
+		pos.second--;
+		return pos;
+	case 4:
+		// +X
+		pos.first++;
+		return pos;
+	case 5:
+		// +(X+Y)
+		pos.first++;
+		pos.second++;
+		return pos;
+	default:
+		cerr << "Invalid direction in Game::advanceInDirection\n";
+		return pos;
+	}
 }
 
 bool Game::isTerminalState()
@@ -652,29 +833,36 @@ bool Game::isTerminalState()
 	return false;
 }
 
-contiguousMarkers Game::getOneRow(int i, int j, int ctr, int mode){
+contiguousMarkers Game::getOneRow(int i, int j, int ctr, int mode)
+{
 	contiguousMarkers oneRow = contiguousMarkers();
-	if (mode == 0){
-		oneRow.push_back(make_pair(make_pair(i, j-numRingsForRow),make_pair(i, j-1)));
-		if (ctr > numRingsForRow){
-			oneRow.push_back(make_pair(make_pair(i, j-numRingsForRow),make_pair(i, j-1)));
+	if (mode == 0)
+	{
+		oneRow.push_back(make_pair(make_pair(i, j - numRingsForRow), make_pair(i, j - 1)));
+		if (ctr > numRingsForRow)
+		{
+			oneRow.push_back(make_pair(make_pair(i, j - numRingsForRow), make_pair(i, j - 1)));
 		}
 	}
-	
-	else if (mode == 1){
-		oneRow.push_back(make_pair(make_pair(j-numRingsForRow, i),make_pair(j-1, i)));
-		if (ctr > numRingsForRow){
-			oneRow.push_back(make_pair(make_pair(j-ctr, i),make_pair(j+numRingsForRow-ctr-1, i)));
+
+	else if (mode == 1)
+	{
+		oneRow.push_back(make_pair(make_pair(j - numRingsForRow, i), make_pair(j - 1, i)));
+		if (ctr > numRingsForRow)
+		{
+			oneRow.push_back(make_pair(make_pair(j - ctr, i), make_pair(j + numRingsForRow - ctr - 1, i)));
 		}
 	}
-	
-	else if (mode == 2){
-		oneRow.push_back(make_pair(make_pair(i-numRingsForRow, j-numRingsForRow),make_pair(i-1, j-1)));
-		if (ctr > numRingsForRow){
-			oneRow.push_back(make_pair(make_pair(i-ctr, j-ctr),make_pair(i+numRingsForRow-ctr-1, j+numRingsForRow-ctr-1)));
+
+	else if (mode == 2)
+	{
+		oneRow.push_back(make_pair(make_pair(i - numRingsForRow, j - numRingsForRow), make_pair(i - 1, j - 1)));
+		if (ctr > numRingsForRow)
+		{
+			oneRow.push_back(make_pair(make_pair(i - ctr, j - ctr), make_pair(i + numRingsForRow - ctr - 1, j + numRingsForRow - ctr - 1)));
 		}
 	}
-	
+
 	return oneRow;
 }
 
@@ -682,56 +870,65 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 {
 	// Place holder
 	contiguousMarkers markers = contiguousMarkers(), row;
-	int chk = player>0 ? 1 : -1; 	
-	int i,j,ctr;
-	
-	for (i = 0; i<boardSize; i++){
+	int chk = player > 0 ? 1 : -1;
+	int i, j, ctr;
+
+	for (i = 0; i < boardSize; i++)
+	{
 		ctr = 0;
-		for (j = x_lims.at(i).first; j<=x_lims.at(i).second; j++){
+		for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
+		{
 			if (board[i][j] == chk)
 				ctr++;
-			else {
+			else
+			{
 				row = getOneRow(i, j, ctr, 0);
 				markers.insert(markers.end(), row.begin(), row.end());
 				ctr = 0;
 			}
 		}
 		row = getOneRow(i, j, ctr, 0);
-		markers.insert(markers.end(), row.begin(), row.end());		
+		markers.insert(markers.end(), row.begin(), row.end());
 	}
-	
-	for (i = 0; i<boardSize; i++){
+
+	for (i = 0; i < boardSize; i++)
+	{
 		ctr = 0;
-		for (j = y_lims.at(i).first; j<=y_lims.at(i).second; j++){
+		for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
+		{
 			if (board[j][i] == chk)
 				ctr++;
-			else {
+			else
+			{
 				row = getOneRow(i, j, ctr, 1);
 				markers.insert(markers.end(), row.begin(), row.end());
 				ctr = 0;
 			}
 		}
 		row = getOneRow(i, j, ctr, 1);
-		markers.insert(markers.end(), row.begin(), row.end());		
+		markers.insert(markers.end(), row.begin(), row.end());
 	}
-	
+
 	int it;
-	for (i = 0; i<2*boardSize-1; i++){
+	for (i = 0; i < 2 * boardSize - 1; i++)
+	{
 		ctr = 0;
 		it = xy_lims.at(i).first - boardSize + i + 1;
-		for (j = xy_lims.at(i).first; j<=xy_lims.at(i).second; j++, it++){
+		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
+		{
 			if (board[it][j] == chk)
 				ctr++;
-			else {
+			else
+			{
 				row = getOneRow(it, j, ctr, 2);
 				markers.insert(markers.end(), row.begin(), row.end());
 				ctr = 0;
 			}
 		}
 		row = getOneRow(it, j, ctr, 2);
-		markers.insert(markers.end(), row.begin(), row.end());		
+		markers.insert(markers.end(), row.begin(), row.end());
 	}
-	
+
 	return markers;
 }
 
@@ -776,7 +973,9 @@ void Game::displayHexagonalBoard()
 			if (hexBoard[X][Y] == -7)
 			{
 				cout << setw(2) << " ";
-			} else {
+			}
+			else
+			{
 				cout << setw(2) << hexBoard[X][Y];
 			}
 		}

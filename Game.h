@@ -69,8 +69,39 @@ class Game
     /**
      * Return all the moves that the `playerToMove` can play from the given state 
      */
-    vector<Move> getAllMoves();
+    vector<MicroMove> getAllMoves(int player);
 
+    /**
+     * Returns all possible moves to place a ring on the board
+     */
+    vector<MicroMove> getAllPlaceRingMoves(int player);
+
+    /**
+     * Returns all possible moves to select and move a possible ring
+     */
+    vector<MicroMove> getAllSelectMoveMoves(int player);
+
+    /**
+     * Returns all possible moves to remove a contiguous row
+     */
+    vector<MicroMove> getAllRemoveRowMoves(int player);
+
+    /**
+     * Returns all possible moves to remove a ring
+     */
+    vector<MicroMove> getAllRemoveRingMoves(int player);
+
+    /**
+     * Returns all positions where the given ring can be moved to in a given direction[0-5] (Aniclokwise from top)
+     */
+    // vector<pair<int, int>> getAllPossibleDestinations(pair<int, int> ringPos); 
+    pair<int, int> advanceInDirection(pair<int, int> pos, int direc);
+    vector<pair<int, int>> Game::getAllPossibleDestinationsInDirection(pair<int, int> ringPos, int direc);
+
+    /**
+     * Tells if the given position is out of bounds
+     */
+    bool isOutOfBounds(pair<int, int> pos);
     /**
      * Play the full move, and return success status
      */
