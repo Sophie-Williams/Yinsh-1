@@ -13,7 +13,7 @@ using namespace std;
 
 class Game
 {
-  private:
+  public: // for testing purposes => please make private
     // Game parameters
     int numRings;
     int boardSize;
@@ -163,6 +163,11 @@ class Game
 	 * Displays current board state
 	 */
 	void displayBoard();
+
+  /**
+   * Display the board in hexagonal format
+   */
+  void displayHexagonalBoard();
 	
 	/**
 	 * Displays possible rows for each location on game board

@@ -17,7 +17,7 @@ Move::Move(string move, int boardSize)
     Utility util;
 
     vector<string> explodedMove = util.splitString(move);
-
+    
     if (explodedMove.size() % 3 != 0)
     {
         cerr << "Error in input move format. Not a multiple of 3";
@@ -96,6 +96,5 @@ string Move::cartesianToPolarString()
     {
         result += moveSeq[i].cartesianToPolarString();
     }
-
     return result;
 }

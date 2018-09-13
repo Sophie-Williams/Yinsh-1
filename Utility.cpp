@@ -182,9 +182,6 @@ vector<string> Utility::splitString(string sentence)
     // return result;
 
     istringstream iss(sentence);
-    copy(istream_iterator<string>(iss),
-         istream_iterator<string>(),
-         ostream_iterator<string>(cout, "\n"));
 
     vector<string> tokens;
     copy(istream_iterator<string>(iss),

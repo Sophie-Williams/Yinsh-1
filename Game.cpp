@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Utility.h"
+#include <assert.h>
 using namespace std;
 
 /** Utility Function */
@@ -665,6 +666,73 @@ void Game::displayBoard()
 		for (int j = 0; j < boardSize; j++)
 		{
 			cout << setw(2) << board[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+void Game::displayHexagonalBoard()
+{
+	int limit = 2 * (boardSize - 1) - 1;
+	limit = 2 * 10 - 1 + 6;
+
+	int hexBoard[limit + 1][limit + 1];
+	for (int X = 0; X <= limit; X++)
+		for (int Y = 0; Y <= limit; Y++)
+			hexBoard[X][Y] = -7;
+
+	for (int x = 0; x < boardSize; x++)
+	{
+		for (int y = 0; y < boardSize; y++)
+		{
+			if (board[x][y] == -7)
+				continue;
+			int X = 2 * x;
+			int Y = 5 + 2 * y - x;
+			hexBoard[X][Y] = board[x][y];
+		}
+	}
+
+	for (int Y = limit; Y >= 0; Y--)
+	{
+		for (int X = 0; X <= limit; X++)
+		{
+			if (hexBoard[X][Y] == -7)
+			{
+				cout << setw(2) << " ";
+			} else {
+				cout << setw(2) << hexBoard[X][Y];
+			}
+		}
+		cout << endl;
+	}
+	return;
+
+	for (int Y = limit; Y >= 0; Y--)
+	{
+		for (int X = 0; X <= limit; X++)
+		{
+			if (X & 1) // odd
+			{
+				cout << setw(2) << " "
+					 << " ";
+				continue;
+			}
+			int x = X / 2;
+			// int y = (Y + x - (boardSize / 2)) / 2;
+			int y = (Y + x - 5) / 2;
+			if (!(x >= 0 && x < boardSize && y >= 0 && y < boardSize))
+			{
+				cout << setw(2) << " "
+					 << " ";
+				continue;
+			}
+
+			if (board[x][y] == -7)
+				cout << setw(2) << " "
+					 << " ";
+			else
+				cout << setw(2) << board[x][y] << " ";
 		}
 		cout << endl;
 	}
