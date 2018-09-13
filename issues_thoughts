@@ -1,2 +1,6 @@
 1. isTerminalState() is used in begining of your move in minmax. Obviously it's not a win state if you are able to move.
     Maybe check for opponent win?
+2. if non intersecting sequence of markers is formed, what is the expected order of move.
+    Can we remove a seq, then ring and then again a seq and ring, or do we have to first remove both the 
+    seq and then both the rings.
+3. vector<int> arr();      vs.          vector<int> arr = vector<int>();

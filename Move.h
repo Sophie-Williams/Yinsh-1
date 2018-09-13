@@ -10,22 +10,23 @@ class Move
 {
   public:
     vector<MicroMove> moveSeq;
+    int boardSize;
 
   public:
     /** 
      * @Constructor with input in cartesian notation
      */
-    Move(vector<MicroMove> moveSeq);
+    Move(vector<MicroMove> moveSeq, int boardSize);
 
     /**
-     * @Constructor with input in polar notation
+     * @Constructor with input in polar notation, and the board Size
      */
-    Move(string move);
+    Move(string move, int boardSize);
 
     /**
      * Returns the polar representation of the full move in the form of a string
      */
-    string cartesianToPolar();
+    string cartesianToPolarString();
 };
 
 #endif // MOVE_H
