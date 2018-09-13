@@ -23,9 +23,9 @@ int main(int argc, char **argv)
     // Spawn an instance of Player and play the game
     Player *yinsh = new Player(player, N);
     // yinsh->playGame();
-	// yinsh -> game -> displayBoard();
-	// yinsh -> game -> dispLims();
-	yinsh -> game -> displayNrows();
+	yinsh -> game -> displayBoard();
+	yinsh -> game -> dispLims();
+	// yinsh -> game -> displayNrows();
 
     return 0;
 }

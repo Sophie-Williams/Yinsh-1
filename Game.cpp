@@ -652,10 +652,86 @@ bool Game::isTerminalState()
 	return false;
 }
 
+contiguousMarkers Game::getOneRow(int i, int j, int ctr, int mode){
+	contiguousMarkers oneRow = contiguousMarkers();
+	if (mode == 0){
+		oneRow.push_back(make_pair(make_pair(i, j-numRingsForRow),make_pair(i, j-1)));
+		if (ctr > numRingsForRow){
+			oneRow.push_back(make_pair(make_pair(i, j-numRingsForRow),make_pair(i, j-1)));
+		}
+	}
+	
+	else if (mode == 1){
+		oneRow.push_back(make_pair(make_pair(j-numRingsForRow, i),make_pair(j-1, i)));
+		if (ctr > numRingsForRow){
+			oneRow.push_back(make_pair(make_pair(j-ctr, i),make_pair(j+numRingsForRow-ctr-1, i)));
+		}
+	}
+	
+	else if (mode == 2){
+		oneRow.push_back(make_pair(make_pair(i-numRingsForRow, j-numRingsForRow),make_pair(i-1, j-1)));
+		if (ctr > numRingsForRow){
+			oneRow.push_back(make_pair(make_pair(i-ctr, j-ctr),make_pair(i+numRingsForRow-ctr-1, j+numRingsForRow-ctr-1)));
+		}
+	}
+	
+	return oneRow;
+}
+
 contiguousMarkers Game::getAllContiguousMarkers(int player)
 {
 	// Place holder
-	contiguousMarkers markers = contiguousMarkers();
+	contiguousMarkers markers = contiguousMarkers(), row;
+	int chk = player>0 ? 1 : -1; 	
+	int i,j,ctr;
+	
+	for (i = 0; i<boardSize; i++){
+		ctr = 0;
+		for (j = x_lims.at(i).first; j<=x_lims.at(i).second; j++){
+			if (board[i][j] == chk)
+				ctr++;
+			else {
+				row = getOneRow(i, j, ctr, 0);
+				markers.insert(markers.end(), row.begin(), row.end());
+				ctr = 0;
+			}
+		}
+		row = getOneRow(i, j, ctr, 0);
+		markers.insert(markers.end(), row.begin(), row.end());		
+	}
+	
+	for (i = 0; i<boardSize; i++){
+		ctr = 0;
+		for (j = y_lims.at(i).first; j<=y_lims.at(i).second; j++){
+			if (board[j][i] == chk)
+				ctr++;
+			else {
+				row = getOneRow(i, j, ctr, 1);
+				markers.insert(markers.end(), row.begin(), row.end());
+				ctr = 0;
+			}
+		}
+		row = getOneRow(i, j, ctr, 1);
+		markers.insert(markers.end(), row.begin(), row.end());		
+	}
+	
+	int it;
+	for (i = 0; i<2*boardSize-1; i++){
+		ctr = 0;
+		it = xy_lims.at(i).first - boardSize + i + 1;
+		for (j = xy_lims.at(i).first; j<=xy_lims.at(i).second; j++, it++){
+			if (board[it][j] == chk)
+				ctr++;
+			else {
+				row = getOneRow(it, j, ctr, 2);
+				markers.insert(markers.end(), row.begin(), row.end());
+				ctr = 0;
+			}
+		}
+		row = getOneRow(it, j, ctr, 2);
+		markers.insert(markers.end(), row.begin(), row.end());		
+	}
+	
 	return markers;
 }
 

@@ -153,11 +153,12 @@ class Game
      * Returns whether the current game state is a win for the `playerToMove`
      */
     bool isTerminalState();
-
-    /**
+	
+	/**
      * Returns an array of all continous streak of markers of player
      */
     contiguousMarkers getAllContiguousMarkers (int player);
+	contiguousMarkers getOneRow(int index, int curr, int ctr, int mode);
 	
 	/**
 	 * Displays current board state
