@@ -8,15 +8,23 @@ using namespace std;
 
 class Move
 {
-  public:
+  private:
     vector<MicroMove> moveSeq;
-    int boardSize;
 
   public:
     /** 
      * @Constructor with input in cartesian notation
      */
-    Move(vector<MicroMove> moveSeq, int boardSize);
+    Move(vector<MicroMove> moveSeq);
+
+    /**
+     * @Constructor creating an empty move sequence
+     */
+    Move();
+
+    vector<MicroMove> getMoveSeq() {
+      return moveSeq;
+    }
 
     /**
      * @Constructor with input in polar notation, and the board Size
@@ -26,7 +34,7 @@ class Move
     /**
      * Returns the polar representation of the full move in the form of a string
      */
-    string cartesianToPolarString();
+    string cartesianToPolarString(int boardSize);
 };
 
 #endif // MOVE_H

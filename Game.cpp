@@ -245,17 +245,18 @@ bool Game::makeMove(Move move)
 {
 	// Make all the constituent micromove
 	bool status = true;
-	for (int m = 0; m < move.moveSeq.size(); m++)
+	vector<MicroMove> moveSeq = move.getMoveSeq();
+	for (int m = 0; m < moveSeq.size(); m++)
 	{
-		status = status && makeMicroMove(move.moveSeq[m]);
+		status = status && makeMicroMove(moveSeq[m]);
 	}
 
 	// Flip the chance => DON'T
 	// playerToMove *= -1;
 
 	// Update game state for both the players
-	int size = move.moveSeq.size();
-	if (size > 0 && move.moveSeq[size - 1].type == 'R')
+	int size = moveSeq.size();
+	if (size > 0 && moveSeq[size - 1].type == 'R')
 	{
 		// If last move is one to pick markers then state will become 4
 		if (playerToMove > 0)
@@ -289,14 +290,15 @@ bool Game::unmakeMove(Move move)
 	// playerToMove *= -1;
 
 	bool status = true;
-	for (int m = move.moveSeq.size() - 1; m >= 0; m--)
+	vector<MicroMove> moveSeq = move.getMoveSeq();
+	for (int m = moveSeq.size() - 1; m >= 0; m--)
 	{
-		status = status && unmakeMicroMove(move.moveSeq[m]);
+		status = status && unmakeMicroMove(moveSeq[m]);
 	}
 
 	// Update game state for both the players
-	int size = move.moveSeq.size();
-	if (size > 0 && move.moveSeq[0].type == 'X')
+	int size = moveSeq.size();
+	if (size > 0 && moveSeq[0].type == 'X')
 	{
 		// If first move was one to remove a ring then state will become 4
 		if (playerToMove > 0)
@@ -630,24 +632,24 @@ pair<int, int> Game::nextPosition(pair<int, int> position, pair<int, bool> trave
 	}
 }
 
-vector<MicroMove> Game::getAllMoves(int player)
+vector<MicroMove> Game::getAllMoves()
 {
 	// Gets all the possible moves from the current state
-	int stateOfGame = (player > 0) ? gameStatePos : gameStateNeg;
+	int stateOfGame = (playerToMove > 0) ? gameStatePos : gameStateNeg;
 	switch (stateOfGame)
 	{
 	case 1:
 		// Have to place ring
-		return getAllPlaceRingMoves(player);
+		return getAllPlaceRingMoves(playerToMove);
 	case 2:
 		// Have to select and move a ring
-		return getAllSelectMoveMoves(player);
+		return getAllSelectMoveMoves(playerToMove);
 	case 3:
 		// Have to remove a row
-		return getAllRemoveRowMoves(player);
+		return getAllRemoveRowMoves(playerToMove);
 	case 4:
 		// Remove a ring
-		return getAllRemoveRingMoves(player);
+		return getAllRemoveRingMoves(playerToMove);
 	default:
 		// Return empty
 		cerr << "Game state invalid in Game::getAllMoves()\n";
@@ -667,7 +669,7 @@ vector<MicroMove> Game::getAllPlaceRingMoves(int player)
 			{
 				// Insert it
 				vector<pair<int, int>> moveInfo(1, make_pair(i, j));
-				MicroMove move = MicroMove('P', moveInfo, boardSize);
+				MicroMove move = MicroMove('P', moveInfo);
 				possibleMoves.push_back(move);
 			}
 		}
@@ -684,7 +686,7 @@ vector<MicroMove> Game::getAllRemoveRingMoves(int player)
 	{
 		// Insert it
 		vector<pair<int, int>> moveInfo(1, make_pair((*it).first, (*it).second));
-		MicroMove move = MicroMove('X', moveInfo, boardSize);
+		MicroMove move = MicroMove('X', moveInfo);
 		possibleMoves.push_back(move);
 	}
 
@@ -702,7 +704,7 @@ vector<MicroMove> Game::getAllRemoveRowMoves(int player)
 		vector<pair<int, int>> moveInfo;
 		moveInfo.push_back((*conMarker).first);
 		moveInfo.push_back((*conMarker).second);
-		MicroMove move = MicroMove('R', moveInfo, boardSize);
+		MicroMove move = MicroMove('R', moveInfo);
 		possibleMoves.push_back(move);
 	}
 
@@ -727,7 +729,7 @@ vector<MicroMove> Game::getAllSelectMoveMoves(int player)
 				vector<pair<int, int>> moveInfo;
 				moveInfo.push_back(*ring);
 				moveInfo.push_back(*dest);
-				MicroMove move = MicroMove('M', moveInfo, boardSize);
+				MicroMove move = MicroMove('M', moveInfo);
 				possibleMoves.push_back(move);
 			}
 		}
@@ -816,7 +818,8 @@ pair<int, int> Game::advanceInDirection(pair<int, int> pos, int direc)
 
 bool Game::isTerminalState()
 {
-	if (getGameState() == 1)
+	// if (getGameState() == 1)
+	if (gameStatePos == 1 || gameStateNeg == 1)
 	{
 		// Game in ring placing stage
 		return false;

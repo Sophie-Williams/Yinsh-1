@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#define bestAction pair<double, vector<Move>>
+#define bestAction pair<double, Move>
 #define INF 1e9+7
 
 #include "Game.h"
@@ -19,14 +19,33 @@ class Player
     int player;
 
     /**
-     * Returns the best Action to perform from the current game state for current player
+     * How much depth to do min-max
      */
-    bestAction maxValue(int depth);
+    int minimaxDepth;
+
+    /** 
+     * The Game state maintained by our player - TEMPORARY
+     */
+    Game *game;
 
     /**
-     * Returns the best Action to perform from the current game state for opponent player
+     * Returns the best Move to play from the current game state for current player
+     * hasMovedYet means in the calling history has the concerned player played a ring moving game
      */
-    bestAction minValue(int depth);
+    bestAction maxValue(int depth, bool hasMovedYet);
+    bestAction maxValuePlaceRing(int depth, bool hasMovedYet);
+    bestAction maxValueMoveRing(int depth, bool hasMovedYet);
+    bestAction maxValueRemoveRow(int depth, bool hasMovedYet);
+    bestAction maxValueRemoveRing(int depth, bool hasMovedYet);
+
+    /**
+     * Returns the best Move to play from the current game state for opponent player
+     */
+    bestAction minValue(int depth, bool hasMovedYet);
+    bestAction minValuePlaceRing(int depth, bool hasMovedYet);
+    bestAction minValueMoveRing(int depth, bool hasMovedYet);
+    bestAction minValueRemoveRow(int depth, bool hasMovedYet);
+    bestAction minValueRemoveRing(int depth, bool hasMovedYet);
 
     /**
      * Takes in input for the opponent's move
@@ -35,10 +54,6 @@ class Player
     void playOpponentMove();
 
   public:
-	/** 
-     * The Game state maintained by our player - TEMPORARY
-     */
-    Game *game;
 
     /**
      * @Constructor

@@ -13,7 +13,7 @@ using namespace std;
 
 class Game
 {
-  public: // for testing purposes => please make private
+  private: // for testing purposes => please make private
     // Game parameters
     int numRings;
     int boardSize;
@@ -56,6 +56,25 @@ class Game
      */
     int getPlayerToMove ();
 
+    void flipPlayerToMove () {
+        playerToMove *= -1;
+    }
+
+    int getBoardSize () {
+      return boardSize;
+    }
+
+    void setGameState (int state) {
+      if (playerToMove > 0)
+      {
+        gameStatePos = state;
+      }
+      else
+      {
+        gameStateNeg = state;
+      }
+    }
+
     /**
      * Returns the `gameState`
      */
@@ -69,7 +88,7 @@ class Game
     /**
      * Return all the moves that the `playerToMove` can play from the given state 
      */
-    vector<MicroMove> getAllMoves(int player);
+    vector<MicroMove> getAllMoves();
 
     /**
      * Returns all possible moves to place a ring on the board
@@ -96,7 +115,7 @@ class Game
      */
     // vector<pair<int, int>> getAllPossibleDestinations(pair<int, int> ringPos); 
     pair<int, int> advanceInDirection(pair<int, int> pos, int direc);
-    vector<pair<int, int>> Game::getAllPossibleDestinationsInDirection(pair<int, int> ringPos, int direc);
+    vector<pair<int, int>> getAllPossibleDestinationsInDirection(pair<int, int> ringPos, int direc);
 
     /**
      * Tells if the given position is out of bounds

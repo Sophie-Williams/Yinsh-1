@@ -4,14 +4,13 @@
 #include <string>
 using namespace std;
 
-MicroMove::MicroMove(char type, vector<pair<int, int>> moveInfo, int boardSize)
+MicroMove::MicroMove(char type, vector<pair<int, int>> moveInfo)
 {
     this->type = type;
     this->moveInfo = moveInfo;
-    this->boardSize = boardSize;
 }
 
-string MicroMove::cartesianToPolarString()
+string MicroMove::cartesianToPolarString(int boardSize)
 {
     Utility util;
 

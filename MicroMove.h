@@ -17,13 +17,13 @@ class MicroMove
     vector<pair<int, int>> moveInfo;
 
     // Useful in conversion to polarString format
-    int boardSize;
+    // int boardSize;
 
   public:
     /** 
      * @Constructor with input in cartesian notation
      */
-    MicroMove(char type, vector<pair<int, int>> moveInfo, int boardSize);
+    MicroMove(char type, vector<pair<int, int>> moveInfo);
 
     /**
      * @Constructor with input in polar notation
@@ -32,9 +32,16 @@ class MicroMove
     // MicroMove(string move);
 
     /**
+     * @Getters
+     */
+    char getType() {
+      return type;
+    }
+
+    /**
      * Returns the polar representation of the micro-move in the form of a string
      */
-    string cartesianToPolarString();
+    string cartesianToPolarString(int boardSize);
 };
 
 #endif // MICRO_MOVE_H
