@@ -14,6 +14,7 @@ string MicroMove::cartesianToPolarString(int boardSize)
 {
     Utility util;
 
+    // cerr << "In MicroMove::cartesianToPolarString, moveInfo.size() = " << moveInfo.size() << endl;
     // Transform into polar coordinates
     vector<pair<int, int>> polarMoveInfo;
     for (auto it = moveInfo.begin(); it != moveInfo.end(); it++)

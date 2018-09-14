@@ -252,7 +252,7 @@ bool Game::makeMove(Move move)
 	}
 
 	// Flip the chance => DON'T
-	// playerToMove *= -1;
+	playerToMove *= -1;
 
 	// Update game state for both the players
 	int size = moveSeq.size();
@@ -668,12 +668,16 @@ vector<MicroMove> Game::getAllPlaceRingMoves(int player)
 			if (board[i][j] == 0)
 			{
 				// Insert it
-				vector<pair<int, int>> moveInfo(1, make_pair(i, j));
-				MicroMove move = MicroMove('P', moveInfo);
+				vector<pair<int, int>> moveInfo;
+				moveInfo.push_back(make_pair(i, j));
+				MicroMove move('P', moveInfo);
+				// cerr << "In Game::getAllPlaceRingMoves, moveInfo.size() = " << moveInfo.size() << move.cartesianToPolarString(boardSize) << endl;
 				possibleMoves.push_back(move);
 			}
 		}
 	}
+
+	return possibleMoves;
 }
 
 vector<MicroMove> Game::getAllRemoveRingMoves(int player)

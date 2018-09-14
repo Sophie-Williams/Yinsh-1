@@ -3,12 +3,13 @@
 #include "Move.h"
 #include "MicroMove.h"
 #include <iostream>
+#include <string>
 using namespace std;
 
 Player::Player(int playerType, int numRings)
 {
     player = playerType;
-    minimaxDepth = 3;
+    minimaxDepth = 1;
 
     // Initialise the game instance
     game = new Game(numRings, playerType);
@@ -160,7 +161,8 @@ bestAction Player::maxValue(int depth, bool hasMoved)
     if (depth <= 0 || game->isTerminalState())
     {
         // Cut off the minimax search
-        double utility = game->getUtility();
+        // double utility = game->getUtility();
+        double utility = 0.0; // CHANGE THIS LATER!!!!!!!!
         return make_pair(utility, Move());
     }
 
@@ -214,11 +216,19 @@ bestAction Player::minValue(int depth, bool hasMoved)
 
 bestAction Player::maxValuePlaceRing(int depth, bool hasMoved)
 {
+    cerr << "In Player::maxValuePlaceRing\n";
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
 
+    // verify moves
+    // for (auto microMv = moves.begin(); microMv != moves.end(); microMv++) {
+    //     cout << (*microMv).cartesianToPolarString(game->getBoardSize()) << endl;
+    // }
+
     // Maintain a maximun
     bestAction maxAction = make_pair(-INF, Move());
+
+    // return maxAction;
 
     // Iterate over all possible moves and retrieve maximum
     for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
@@ -464,7 +474,6 @@ bestAction Player::maxValueRemoveRing(int depth, bool hasMoved)
 
     return maxAction;
 }
-
 
 bestAction Player::minValuePlaceRing(int depth, bool hasMoved)
 {
@@ -718,20 +727,31 @@ bestAction Player::minValueRemoveRing(int depth, bool hasMoved)
 
 void Player::playOpponentMove()
 {
+    cout << "in play opp move" << endl;
     // Take the opponent move as input
     string oppMove;
+    // cin.ignore(); // To ignore any '\n' before
     getline(cin, oppMove);
 
+    // cout << oppMove << "$";
+
     Move move(oppMove, game->getBoardSize());
+    cout << move.cartesianToPolarString(game->getBoardSize()) << endl;
     game->makeMove(move);
 }
+
 void Player::playGame()
 {
+    cout << "In playGame " << player << endl;
+
     if (player < 0)
     {
         // Get other player's move and play
         playOpponentMove();
     }
+
+    // game->displayHexagonalBoard();
+    // return;
 
     // play the game
     while (true)
@@ -739,7 +759,11 @@ void Player::playGame()
         // Get our move and play and then tell the opponent
         Move ourMove = maxValue(minimaxDepth, false).second;
         game->makeMove(ourMove);
-        cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
+        // cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
+
+        game->displayHexagonalBoard();
+        cout << "Player " << game->getPlayerToMove() << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
+        cout << "Player " << game->getPlayerToMove() << "'s turn: ";
 
         // Get other player's move and play
         playOpponentMove();
