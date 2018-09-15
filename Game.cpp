@@ -1187,6 +1187,7 @@ void Game::addRing(int **player, int x, int y)
 		}
 	}
 
+	tk = y;
 	for (i = x + 1, j = y + 1; i < boardSize && j < boardSize; i++, j++)
 	{
 		if (board[i][j] == 2 || board[i][j] == -2 || board[i][j] == -7)
