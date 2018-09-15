@@ -58,6 +58,14 @@ class Game
      */
     int getPlayerToMove ();
 
+    vector<pair<int, int>> getRingsPositive () {
+      return ringsPositive;
+    }
+
+    vector<pair<int, int>> getRingsNegative () {
+      return ringsNegative;
+    }
+
     void flipPlayerToMove () {
         playerToMove *= -1;
     }

@@ -308,7 +308,7 @@ bool Game::makeMove(Move move)
 
 	// Update game state for both the players
 
-	cerr << "In Game::makeMove: posState= " << gameStatePos << " | negState= " << gameStateNeg << endl;
+	// cerr << "In Game::makeMove: posState= " << gameStatePos << " | negState= " << gameStateNeg << endl;
 	// Commenting below for now since a valid move will never have 'R' in it's end
 	/*
 	int size = moveSeq.size();
@@ -814,8 +814,8 @@ vector<pair<int, int>> Game::getAllPossibleDestinationsInDirection(pair<int, int
 	{
 		int x = ringPos.first, y = ringPos.second;
 
-		if (board[x][y] == -7)
-			break; // reached the edge
+		if (board[x][y] == -7 || board[x][y] == 2 || board[x][y] == -2)
+			break; // reached the edge (really or virtually)
 
 		if (board[x][y] == 0)
 		{
@@ -1049,45 +1049,16 @@ void Game::displayHexagonalBoard()
 		{
 			if (hexBoard[X][Y] == -7)
 			{
-				cout << setw(2) << " ";
+				cerr << setw(2) << " ";
 			}
 			else
 			{
-				cout << setw(2) << hexBoard[X][Y];
+				cerr << setw(2) << hexBoard[X][Y];
 			}
 		}
-		cout << endl;
+		cerr << endl;
 	}
 	return;
-
-	for (int Y = limit; Y >= 0; Y--)
-	{
-		for (int X = 0; X <= limit; X++)
-		{
-			if (X & 1) // odd
-			{
-				cout << setw(2) << " "
-					 << " ";
-				continue;
-			}
-			int x = X / 2;
-			// int y = (Y + x - (boardSize / 2)) / 2;
-			int y = (Y + x - 5) / 2;
-			if (!(x >= 0 && x < boardSize && y >= 0 && y < boardSize))
-			{
-				cout << setw(2) << " "
-					 << " ";
-				continue;
-			}
-
-			if (board[x][y] == -7)
-				cout << setw(2) << " "
-					 << " ";
-			else
-				cout << setw(2) << board[x][y] << " ";
-		}
-		cout << endl;
-	}
 }
 
 void Game::displayNrows()

@@ -91,10 +91,11 @@ void testMakeMove()
         // do something with the line
         // system("clear");
         Move move(line, 11);
+        // cout << game.getRingsPositive();
 
         game.makeMove(move);
         game.displayHexagonalBoard();
-        cout << "Player " <<  game.getPlayerToMove() << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
+        cout << "Player " <<  (game.getPlayerToMove()*-1) << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
         // game.getPlayerToMove() *= -1; // flip turn
         cout << "Player " << game.getPlayerToMove() << "'s turn: ";
         // usleep(1500000);
