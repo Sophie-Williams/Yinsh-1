@@ -1063,6 +1063,30 @@ void Game::dispLims()
 	cout << endl;
 }
 
+void Game::displayP()
+{
+	for (int i = 0; i < boardSize; i++)
+	{
+		for (int j = 0; j < boardSize; j++)
+		{
+			cout << setw(2) << playerPos[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+void Game::displayN()
+{
+	for (int i = 0; i < boardSize; i++)
+	{
+		for (int j = 0; j < boardSize; j++)
+		{
+			cout << setw(2) << playerNeg[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+
 int Game::getOverlaps(int l, int r, int pt)
 {
 	int truel = l > pt - numRingsForRow + 1 ? l : pt - numRingsForRow + 1;

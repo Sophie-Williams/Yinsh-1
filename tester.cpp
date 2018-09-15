@@ -89,11 +89,19 @@ void testMakeMove()
     while (getline(cin, line))
     {
         // do something with the line
-        // system("clear");
+        // system("cls");
         Move move(line, 11);
 
         game.makeMove(move);
-        game.displayHexagonalBoard();
+		game.computePlayerPos();
+		game.computePlayerNeg();
+        // game.displayHexagonalBoard();
+		game.displayBoard();
+		cout << endl;
+		game.displayP();
+		cout << endl;
+		game.displayN();
+		cout << endl;
         cout << "Player " <<  game.getPlayerToMove() << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
         // game.getPlayerToMove() *= -1; // flip turn
         cout << "Player " << game.getPlayerToMove() << "'s turn: ";

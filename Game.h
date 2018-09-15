@@ -221,6 +221,16 @@ class Game
   void displayHexagonalBoard();
 	
 	/**
+	 * Displays positive player influence
+	 */
+	void displayP();
+	
+	/**
+	 * Displays negative player influence
+	 */
+	void displayN();
+	
+	/**
 	 * Displays possible rows for each location on game board
 	 */
 	void displayNrows();
