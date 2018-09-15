@@ -1101,6 +1101,7 @@ int Game::getOverlaps(int l, int r, int pt)
 
 void Game::addRing(int **player, int x, int y)
 {
+	// cout << x << " " << y << endl;
 	player[x][y]++;
 	int tk = x, it, i, j;
 	for (i = x - 1; i >= 0; i--)
@@ -1172,7 +1173,7 @@ void Game::addRing(int **player, int x, int y)
 	}
 	tk = y;
 
-	for (i = y - 1; i < boardSize; i--)
+	for (i = y - 1; i >= 0; i--)
 	{
 		if (board[x][i] == 2 || board[x][i] == -2 || board[x][i] == -7)
 			break;
@@ -1246,6 +1247,8 @@ void Game::computePlayerPos()
 	for (int i = 0; i < ringsPositive.size(); i++)
 	{
 		addRing(playerPos, ringsPositive.at(i).first, ringsPositive.at(i).second);
+		// displayP();
+		// cout << endl;
 	}
 }
 
@@ -1254,6 +1257,8 @@ void Game::computePlayerNeg()
 	for (int i = 0; i < ringsNegative.size(); i++)
 	{
 		addRing(playerNeg, ringsNegative.at(i).first, ringsNegative.at(i).second);
+		// displayN();
+		// cout << endl;
 	}
 }
 
@@ -1301,6 +1306,10 @@ double Game::getUtility()
 	// Utility of win state should be highest and of lose state should be minimum
 	computePlayerPos();
 	computePlayerNeg();
+	displayP();
+	cout << "---------------------------" <<endl;
+	displayN();
+	cout << "---------------------------" <<endl;        
 	double util = computeMetric() + 100 * playerAssgn * (ringsNegative.size() - ringsPositive.size());
 	return util;
 }
