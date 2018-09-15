@@ -37,6 +37,9 @@
 *.js
 
 main
+./games/*
+./games-p/*
+./games-nik/*
 
 # Custom
 .vscode/
