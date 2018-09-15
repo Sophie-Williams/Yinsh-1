@@ -937,6 +937,8 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 	int it;
 	for (i = 0; i < 2 * boardSize - 1; i++)
 	{
+		if (xy_lims.at(i).first == 0 && xy_lims.at(i).second == 0)
+			continue;
 		ctr = 0;
 		it = xy_lims.at(i).first - boardSize + i + 1;
 		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
