@@ -89,7 +89,7 @@ void testMakeMove()
     while (getline(cin, line))
     {
         // do something with the line
-        system("clear");
+        // system("clear");
         Move move(line, 11);
 
         game.makeMove(move);

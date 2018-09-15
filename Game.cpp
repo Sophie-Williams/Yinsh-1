@@ -897,15 +897,17 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 		{
 			if (board[i][j] == chk)
 				ctr++;
-			else
+			else if (ctr >= numRingsForRow)
 			{
 				row = getOneRow(i, j, ctr, 0);
 				markers.insert(markers.end(), row.begin(), row.end());
 				ctr = 0;
 			}
 		}
-		row = getOneRow(i, j, ctr, 0);
-		markers.insert(markers.end(), row.begin(), row.end());
+		if (ctr>=numRingsForRow){
+			row = getOneRow(i, j, ctr, 0);
+			markers.insert(markers.end(), row.begin(), row.end());
+		}
 	}
 
 	for (i = 0; i < boardSize; i++)
@@ -915,15 +917,17 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 		{
 			if (board[j][i] == chk)
 				ctr++;
-			else
+			else if (ctr >= numRingsForRow)
 			{
 				row = getOneRow(i, j, ctr, 1);
 				markers.insert(markers.end(), row.begin(), row.end());
 				ctr = 0;
 			}
 		}
-		row = getOneRow(i, j, ctr, 1);
-		markers.insert(markers.end(), row.begin(), row.end());
+		if (ctr>=numRingsForRow){
+			row = getOneRow(i, j, ctr, 1);
+			markers.insert(markers.end(), row.begin(), row.end());
+		}
 	}
 
 	int it;
@@ -935,15 +939,17 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 		{
 			if (board[it][j] == chk)
 				ctr++;
-			else
+			else if (ctr >= numRingsForRow)
 			{
 				row = getOneRow(it, j, ctr, 2);
 				markers.insert(markers.end(), row.begin(), row.end());
 				ctr = 0;
 			}
 		}
-		row = getOneRow(it, j, ctr, 2);
-		markers.insert(markers.end(), row.begin(), row.end());
+		if (ctr >= numRingsForRow){
+			row = getOneRow(it, j, ctr, 2);
+			markers.insert(markers.end(), row.begin(), row.end());
+		}
 	}
 
 	return markers;
