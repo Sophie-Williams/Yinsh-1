@@ -308,7 +308,7 @@ bool Game::makeMove(Move move)
 
 	// Update game state for both the players
 
-	cerr << "In Game::makeMove: posState= " << gameStatePos << " | negState= " << gameStateNeg << endl;
+	// cerr << "In Game::makeMove: posState= " << gameStatePos << " | negState= " << gameStateNeg << endl;
 	// Commenting below for now since a valid move will never have 'R' in it's end
 	/*
 	int size = moveSeq.size();
@@ -1354,11 +1354,11 @@ double Game::getUtility()
 	// Utility of win state should be highest and of lose state should be minimum
 	computePlayerPos();
 	computePlayerNeg();
-	displayP();
-	cout << "---------------------------" <<endl;
-	displayN();
-	cout << "---------------------------" <<endl;        
-	double util = computeMetric() + 100 * playerAssgn * (ringsNegative.size() - ringsPositive.size());
-	return util;
+	// displayP();
+	// cout << "---------------------------" <<endl;
+	// displayN();
+	// cout << "---------------------------" <<endl;        
+	double util = computeMetric();
+	return util+ 200 * playerAssgn * ((int)ringsPositive.size() - (int)ringsNegative.size());
 	// return 0.0;
 }
