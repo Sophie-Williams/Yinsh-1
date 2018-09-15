@@ -1257,7 +1257,7 @@ void Game::addRing(int **player, int x, int y)
 			}
 			else
 			{
-				for (it = tk--; it >= i; it--)
+				for (it = tk--; it >= j; it--)
 				{
 					player[it + x - y][it] += 1;
 				}
@@ -1280,7 +1280,7 @@ void Game::addRing(int **player, int x, int y)
 			}
 			else
 			{
-				for (it = tk++; it <= i; it++)
+				for (it = tk++; it <= j; it++)
 				{
 					player[it + x - y][it] += 1;
 				}
@@ -1360,4 +1360,5 @@ double Game::getUtility()
 	cout << "---------------------------" <<endl;        
 	double util = computeMetric() + 100 * playerAssgn * (ringsNegative.size() - ringsPositive.size());
 	return util;
+	// return 0.0;
 }
