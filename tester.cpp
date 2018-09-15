@@ -79,25 +79,26 @@ void testerMoveIO()
 
 void testMakeMove()
 {
-    Game game(5, 11);
+    Game game(5, 1);
 
     // Tests move input output
     string line;
 
-    game.displayHexagonalBoard();
+    // game.displayHexagonalBoard();
     cout << "Player " << game.getPlayerToMove() << "'s turn: ";
     while (getline(cin, line))
     {
         // do something with the line
-        // system("clear");
+        // system("cls");
         Move move(line, 11);
         // cout << game.getRingsPositive();
 
         game.makeMove(move);
         game.displayHexagonalBoard();
         cout << "Player " <<  (game.getPlayerToMove()*-1) << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
+		cout << game.getUtility() << endl;
         // game.getPlayerToMove() *= -1; // flip turn
-        cout << "Player " << game.getPlayerToMove() << "'s turn: ";
+        // cout << "Player " << game.getPlayerToMove() << "'s turn: ";
         // usleep(1500000);
     }
 

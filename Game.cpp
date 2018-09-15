@@ -1097,6 +1097,30 @@ void Game::dispLims()
 	cout << endl;
 }
 
+void Game::displayP()
+{
+	for (int i = 0; i < boardSize; i++)
+	{
+		for (int j = 0; j < boardSize; j++)
+		{
+			cout << setw(2) << playerPos[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+void Game::displayN()
+{
+	for (int i = 0; i < boardSize; i++)
+	{
+		for (int j = 0; j < boardSize; j++)
+		{
+			cout << setw(2) << playerNeg[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
+
+
 int Game::getOverlaps(int l, int r, int pt)
 {
 	int truel = l > pt - numRingsForRow + 1 ? l : pt - numRingsForRow + 1;
@@ -1107,6 +1131,7 @@ int Game::getOverlaps(int l, int r, int pt)
 
 void Game::addRing(int **player, int x, int y)
 {
+	// cout << x << " " << y << endl;
 	player[x][y]++;
 	int tk = x, it, i, j;
 	for (i = x - 1; i >= 0; i--)
@@ -1178,7 +1203,7 @@ void Game::addRing(int **player, int x, int y)
 	}
 	tk = y;
 
-	for (i = y - 1; i < boardSize; i--)
+	for (i = y - 1; i >= 0; i--)
 	{
 		if (board[x][i] == 2 || board[x][i] == -2 || board[x][i] == -7)
 			break;
@@ -1214,7 +1239,7 @@ void Game::addRing(int **player, int x, int y)
 			}
 			else
 			{
-				for (it = tk--; it >= i; it--)
+				for (it = tk--; it >= j; it--)
 				{
 					player[it + x - y][it] += 1;
 				}
@@ -1237,7 +1262,7 @@ void Game::addRing(int **player, int x, int y)
 			}
 			else
 			{
-				for (it = tk++; it <= i; it++)
+				for (it = tk++; it <= j; it++)
 				{
 					player[it + x - y][it] += 1;
 				}
@@ -1252,6 +1277,8 @@ void Game::computePlayerPos()
 	for (int i = 0; i < ringsPositive.size(); i++)
 	{
 		addRing(playerPos, ringsPositive.at(i).first, ringsPositive.at(i).second);
+		// displayP();
+		// cout << endl;
 	}
 }
 
@@ -1260,6 +1287,8 @@ void Game::computePlayerNeg()
 	for (int i = 0; i < ringsNegative.size(); i++)
 	{
 		addRing(playerNeg, ringsNegative.at(i).first, ringsNegative.at(i).second);
+		// displayN();
+		// cout << endl;
 	}
 }
 
@@ -1307,6 +1336,11 @@ double Game::getUtility()
 	// Utility of win state should be highest and of lose state should be minimum
 	computePlayerPos();
 	computePlayerNeg();
-	double util = computeMetric() + 100 * playerAssgn * (ringsNegative.size() - ringsPositive.size());
-	return util;
+	// displayP();
+	// cout << "---------------------------" <<endl;
+	// displayN();
+	// cout << "---------------------------" <<endl;        
+	double util = computeMetric();
+	return util+ 200 * playerAssgn * ((int)ringsPositive.size() - (int)ringsNegative.size());
+	// return 0.0;
 }
