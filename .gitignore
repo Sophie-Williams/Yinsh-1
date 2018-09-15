@@ -31,12 +31,15 @@
 *.out
 *.app
 
+main
+tester
+
 *.py
 *.txt
 *.json
 *.js
 
-main
+
 ./games/*
 ./games-p/*
 ./games-nik/*
