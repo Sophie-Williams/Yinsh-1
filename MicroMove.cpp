@@ -1,19 +1,20 @@
 #include "MicroMove.h"
 #include "Utility.h"
+#include <iostream>
 #include <string>
 using namespace std;
 
-MicroMove::MicroMove(char type, vector<pair<int, int>> moveInfo, int boardSize)
+MicroMove::MicroMove(char type, vector<pair<int, int>> moveInfo)
 {
     this->type = type;
     this->moveInfo = moveInfo;
-    this->boardSize = boardSize;
 }
 
-string MicroMove::cartesianToPolarString()
+string MicroMove::cartesianToPolarString(int boardSize)
 {
     Utility util;
 
+    // cerr << "In MicroMove::cartesianToPolarString, moveInfo.size() = " << moveInfo.size() << endl;
     // Transform into polar coordinates
     vector<pair<int, int>> polarMoveInfo;
     for (auto it = moveInfo.begin(); it != moveInfo.end(); it++)
@@ -35,6 +36,7 @@ string MicroMove::cartesianToPolarString()
         return "X " + to_string(polarMoveInfo[0].first) + " " + to_string(polarMoveInfo[0].second) + " ";
 
     default:
+        cerr << "Invalid type of move in MicroMove::cartesianToPolarString\n";
         return "";
     }
 }

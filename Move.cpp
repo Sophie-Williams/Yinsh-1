@@ -4,20 +4,21 @@
 #include <string>
 using namespace std;
 
-Move::Move(vector<MicroMove> moveSeq, int boardSize)
+Move::Move(vector<MicroMove> moveSeq)
 {
     this->moveSeq = moveSeq;
-    this->boardSize = boardSize;
+}
+
+Move::Move()
+{
 }
 
 Move::Move(string move, int boardSize)
 {
-    this->boardSize = boardSize;
-
     Utility util;
 
     vector<string> explodedMove = util.splitString(move);
-    
+
     if (explodedMove.size() % 3 != 0)
     {
         cerr << "Error in input move format. Not a multiple of 3";
@@ -39,7 +40,7 @@ Move::Move(string move, int boardSize)
             moveInfo.push_back(pos);
 
             // Push the micromove and clear moveInfo
-            moveSeq.push_back(MicroMove(type, moveInfo, boardSize));
+            moveSeq.push_back(MicroMove(type, moveInfo));
             moveInfo.clear();
         }
         else if (explodedMove[i] == "S")
@@ -57,7 +58,7 @@ Move::Move(string move, int boardSize)
             moveInfo.push_back(pos);
 
             // Push the micromove and clear moveInfo
-            moveSeq.push_back(MicroMove(type, moveInfo, boardSize));
+            moveSeq.push_back(MicroMove(type, moveInfo));
             moveInfo.clear();
         }
         else if (explodedMove[i] == "RS")
@@ -73,7 +74,7 @@ Move::Move(string move, int boardSize)
             moveInfo.push_back(pos);
 
             // Push the micromove and clear moveInfo
-            moveSeq.push_back(MicroMove(type, moveInfo, boardSize));
+            moveSeq.push_back(MicroMove(type, moveInfo));
             moveInfo.clear();
         }
         else if (explodedMove[i] == "X")
@@ -83,18 +84,18 @@ Move::Move(string move, int boardSize)
             moveInfo.push_back(pos);
 
             // Push the micromove and clear moveInfo
-            moveSeq.push_back(MicroMove(type, moveInfo, boardSize));
+            moveSeq.push_back(MicroMove(type, moveInfo));
             moveInfo.clear();
         }
     }
 }
 
-string Move::cartesianToPolarString()
+string Move::cartesianToPolarString(int boardSize)
 {
     string result = "";
     for (int i = 0; i < moveSeq.size(); i++)
     {
-        result += moveSeq[i].cartesianToPolarString();
+        result += moveSeq[i].cartesianToPolarString(boardSize);
     }
     return result;
 }
