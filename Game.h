@@ -41,6 +41,8 @@ class Game
     int gameStatePos;    // 1: Place Ring | 2: Select Ring and Move Ring | 3: Remove a Row | 4: Remove a Ring
     int gameStateNeg;    // 1: Place Ring | 2: Select Ring and Move Ring | 3: Remove a Row | 4: Remove a Ring
 
+    bool posRingsPlaced; // Have all rings been placed
+    bool negRingsPlaced; // Have all rings been placed
   public:
     /**
      * @constructor
@@ -72,6 +74,14 @@ class Game
       else
       {
         gameStateNeg = state;
+      }
+    }
+
+    bool moreToPlace() {
+      if (playerToMove > 0) {
+        return (ringsPositive.size() < numRings);
+      } else {
+        return (ringsNegative.size() < numRings);
       }
     }
 
