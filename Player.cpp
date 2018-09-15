@@ -252,6 +252,11 @@ bestAction Player::maxValuePlaceRing(int depth, bool hasMoved)
             cerr << "Failure in applying move Player::maxValuePlaceRing\n";
 
         game->updateGameState(game->getPlayerToMove());
+        // // If ring is left to be placed, update accordingly
+        // if (game->moreToPlace())
+        // {
+        //     game->setGameState(1);
+        // }
         game->flipPlayerToMove();
 
         // Give turn to opponent
@@ -511,6 +516,11 @@ bestAction Player::minValuePlaceRing(int depth, bool hasMoved)
             cerr << "Failure in applying move Player::minValuePlaceRing\n";
 
         game->updateGameState(game->getPlayerToMove());
+        // If ring is left to be placed, update accordingly
+        // if (game->moreToPlace())
+        // {
+        //     game->setGameState(1);
+        // }
         game->flipPlayerToMove();
 
         // Give turn to opponent

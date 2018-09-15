@@ -167,6 +167,9 @@ Game::Game(int numberOfRings, int playerType)
 	playerToMove = 1; // Always player 0 moves first
 	gameStatePos = 1; // Place Ring
 	gameStateNeg = 1; // Place Ring
+
+	posRingsPlaced = false;
+	negRingsPlaced = false;
 }
 
 int Game::getPlayerToMove()
@@ -191,10 +194,25 @@ void Game::updateGameState(int player)
 	// cerr << "Updating Game State for player: " << player << endl;
 	// This function is called after making a valid sequence of moves
 	// Thus it is assumed that game CANNOT be in state 4
+/*
+	contiguousMarkers markers = getAllContiguousMarkers(player);
+	// cerr << "In Game::updateGameState markers+.size()=" << markers.size() << endl;
+	if (markers.size() == 0)
+	{
+		// No marker streak to remove
+		gameStatePos = 2;
+	}
+	else
+	{
+		gameStatePos = 3;
+	}
+
+	return;
+*/
 	if (player > 0)
 	{
 		// It's positive player
-		if (ringsPositive.size() < numRings)
+		if (ringsPositive.size() < numRings && !posRingsPlaced)
 		{
 			// More rings yet to come
 			gameStatePos = 1;
@@ -219,7 +237,7 @@ void Game::updateGameState(int player)
 	else
 	{
 		// It's positive player
-		if (ringsNegative.size() < numRings)
+		if (ringsNegative.size() < numRings && !negRingsPlaced)
 		{
 			// More rings yet to come
 			gameStateNeg = 1;
@@ -247,7 +265,7 @@ void Game::updateGameState(int player)
  *  AND DO NOT CHECK VALIDITY FOR EFFICIENCY PURPOSES.
  *  FOR ERRORS WHICH CAN'T BE IGNORED FOR SAFE EXIT OF PROGRAM, I RETURN false
  */
-/* playerToMove flipping is managed by the CALLING FUNCTION */
+/* playerToMove flipping is managed by ME now */
 bool Game::makeMove(Move move)
 {
 	// Make all the constituent micromove
@@ -258,12 +276,37 @@ bool Game::makeMove(Move move)
 		status = status && makeMicroMove(moveSeq[m]);
 	}
 
-	// Flip the chance => DON'T
+	// Update state of rings placed
+	if (ringsPositive.size() == numRings) {
+		// All have been placed
+		posRingsPlaced = true;
+	}
+	if (ringsNegative.size() == numRings) {
+		// All have been placed
+		negRingsPlaced = true;
+	}
+
+	updateGameState(1);
+	updateGameState(-1);
+	// updateGameState(playerToMove);
+
+	// int size = moveSeq.size();
+	// cerr << "In Game::makeMove " << moveSeq[0].cartesianToPolarString(boardSize);
+	// if (size > 0 && moveSeq[0].type == 'P')
+	// {
+	// 	// If move is one place ring then state may become 1
+
+	// 	// If ring is left to be placed, update accordingly
+	// 	if (moreToPlace())
+	// 	{
+	// 		setGameState(1);
+	// 	}
+	// }
+
+	// Flip the chance => DON'T => YES
 	playerToMove *= -1;
 
 	// Update game state for both the players
-	updateGameState(1);
-	updateGameState(-1);
 
 	cerr << "In Game::makeMove: posState= " << gameStatePos << " | negState= " << gameStateNeg << endl;
 	// Commenting below for now since a valid move will never have 'R' in it's end
@@ -293,12 +336,12 @@ bool Game::makeMove(Move move)
 	// success
 	return status;
 }
-
+/*
 bool Game::unmakeMove(Move move)
 {
-	/** Unmake all the constituent micromove IN REVERSE ORDER */
+	// Unmake all the constituent micromove IN REVERSE ORDER 
 
-	/** Don't do following. RESPONSIBILITY OF CALLER to flip playerToMove */
+	// Don't do following. RESPONSIBILITY OF CALLER to flip playerToMove 
 	// Flip the chance first since we wanna see it with the perspective of player who played the game
 	// and not the current player
 	// playerToMove *= -1;
@@ -335,6 +378,8 @@ bool Game::unmakeMove(Move move)
 	// success
 	return status;
 }
+
+*/
 
 bool Game::makeMicroMove(MicroMove move)
 {
@@ -908,7 +953,8 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 				ctr = 0;
 			}
 		}
-		if (ctr>=numRingsForRow){
+		if (ctr >= numRingsForRow)
+		{
 			row = getOneRow(i, j, ctr, 0);
 			markers.insert(markers.end(), row.begin(), row.end());
 		}
@@ -928,7 +974,8 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 				ctr = 0;
 			}
 		}
-		if (ctr>=numRingsForRow){
+		if (ctr >= numRingsForRow)
+		{
 			row = getOneRow(i, j, ctr, 1);
 			markers.insert(markers.end(), row.begin(), row.end());
 		}
@@ -952,7 +999,8 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 				ctr = 0;
 			}
 		}
-		if (ctr >= numRingsForRow){
+		if (ctr >= numRingsForRow)
+		{
 			row = getOneRow(it, j, ctr, 2);
 			markers.insert(markers.end(), row.begin(), row.end());
 		}
