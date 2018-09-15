@@ -194,7 +194,7 @@ void Game::updateGameState(int player)
 	// cerr << "Updating Game State for player: " << player << endl;
 	// This function is called after making a valid sequence of moves
 	// Thus it is assumed that game CANNOT be in state 4
-/*
+	/*
 	contiguousMarkers markers = getAllContiguousMarkers(player);
 	// cerr << "In Game::updateGameState markers+.size()=" << markers.size() << endl;
 	if (markers.size() == 0)
@@ -277,11 +277,13 @@ bool Game::makeMove(Move move)
 	}
 
 	// Update state of rings placed
-	if (ringsPositive.size() == numRings) {
+	if (ringsPositive.size() == numRings)
+	{
 		// All have been placed
 		posRingsPlaced = true;
 	}
-	if (ringsNegative.size() == numRings) {
+	if (ringsNegative.size() == numRings)
+	{
 		// All have been placed
 		negRingsPlaced = true;
 	}
@@ -907,7 +909,7 @@ contiguousMarkers Game::getOneRow(int i, int j, int ctr, int mode)
 		oneRow.push_back(make_pair(make_pair(i, j - numRingsForRow), make_pair(i, j - 1)));
 		if (ctr > numRingsForRow)
 		{
-			oneRow.push_back(make_pair(make_pair(i, j - numRingsForRow), make_pair(i, j - 1)));
+			oneRow.push_back(make_pair(make_pair(i, j - ctr), make_pair(i, j - ctr + numRingsForRow - 1)));
 		}
 	}
 
@@ -946,10 +948,13 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 		{
 			if (board[i][j] == chk)
 				ctr++;
-			else if (ctr >= numRingsForRow)
+			else
 			{
-				row = getOneRow(i, j, ctr, 0);
-				markers.insert(markers.end(), row.begin(), row.end());
+				if (ctr >= numRingsForRow)
+				{
+					row = getOneRow(i, j, ctr, 0);
+					markers.insert(markers.end(), row.begin(), row.end());
+				}
 				ctr = 0;
 			}
 		}
@@ -967,10 +972,13 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 		{
 			if (board[j][i] == chk)
 				ctr++;
-			else if (ctr >= numRingsForRow)
+			else
 			{
-				row = getOneRow(i, j, ctr, 1);
-				markers.insert(markers.end(), row.begin(), row.end());
+				if (ctr >= numRingsForRow)
+				{
+					row = getOneRow(i, j, ctr, 1);
+					markers.insert(markers.end(), row.begin(), row.end());
+				}
 				ctr = 0;
 			}
 		}
@@ -992,10 +1000,13 @@ contiguousMarkers Game::getAllContiguousMarkers(int player)
 		{
 			if (board[it][j] == chk)
 				ctr++;
-			else if (ctr >= numRingsForRow)
+			else
 			{
-				row = getOneRow(it, j, ctr, 2);
-				markers.insert(markers.end(), row.begin(), row.end());
+				if (ctr >= numRingsForRow)
+				{
+					row = getOneRow(it, j, ctr, 2);
+					markers.insert(markers.end(), row.begin(), row.end());
+				}
 				ctr = 0;
 			}
 		}
