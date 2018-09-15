@@ -188,6 +188,7 @@ int Game::getGameState()
 
 void Game::updateGameState(int player)
 {
+	// cerr << "Updating Game State for player: " << player << endl;
 	// This function is called after making a valid sequence of moves
 	// Thus it is assumed that game CANNOT be in state 4
 	if (player > 0)
@@ -201,6 +202,7 @@ void Game::updateGameState(int player)
 		else
 		{
 			contiguousMarkers markers = getAllContiguousMarkers(1);
+			cerr << "In Game::updateGameState markers+.size()=" << markers.size() << endl;
 			if (markers.size() == 0)
 			{
 				// No marker streak to remove
@@ -223,6 +225,7 @@ void Game::updateGameState(int player)
 		else
 		{
 			contiguousMarkers markers = getAllContiguousMarkers(-1);
+			cerr << "In Game::updateGameState markers-.size()=" << markers.size() << endl;
 			if (markers.size() == 0)
 			{
 				// No marker streak to remove
@@ -255,6 +258,12 @@ bool Game::makeMove(Move move)
 	playerToMove *= -1;
 
 	// Update game state for both the players
+	updateGameState(1);
+	updateGameState(-1);
+
+	cerr << "In Game::makeMove: posState= " << gameStatePos << " | negState= " << gameStateNeg << endl;
+	// Commenting below for now since a valid move will never have 'R' in it's end
+	/*
 	int size = moveSeq.size();
 	if (size > 0 && moveSeq[size - 1].type == 'R')
 	{
@@ -275,6 +284,7 @@ bool Game::makeMove(Move move)
 		updateGameState(1);
 		updateGameState(-1);
 	}
+	*/
 
 	// success
 	return status;
@@ -973,9 +983,9 @@ void Game::displayHexagonalBoard()
 		}
 	}
 
-	for (int Y = limit; Y >= 0; Y--)
+	for (int Y = limit - 5; Y >= 0; Y--)
 	{
-		for (int X = 0; X <= limit; X++)
+		for (int X = 0; X <= limit - 3; X++)
 		{
 			if (hexBoard[X][Y] == -7)
 			{

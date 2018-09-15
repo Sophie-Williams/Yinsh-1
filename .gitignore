@@ -33,6 +33,7 @@
 
 main
 tester
+debug 
 
 *.py
 *.txt

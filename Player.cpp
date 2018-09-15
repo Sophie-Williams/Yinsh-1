@@ -4,6 +4,8 @@
 #include "MicroMove.h"
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
 Player::Player(int playerType, int numRings)
@@ -162,7 +164,8 @@ bestAction Player::maxValue(int depth, bool hasMoved)
     {
         // Cut off the minimax search
         // double utility = game->getUtility();
-        double utility = 0.0; // CHANGE THIS LATER!!!!!!!!
+        double utility = 0.0;
+        // double utility = ((float) RAND_MAX); // CHANGE THIS LATER!!!!!!!!
         return make_pair(utility, Move());
     }
 
@@ -191,7 +194,9 @@ bestAction Player::minValue(int depth, bool hasMoved)
     if (depth <= 0 || game->isTerminalState())
     {
         // Cut off the minimax search
-        double utility = game->getUtility();
+        // double utility = game->getUtility();
+        double utility = 0.0;
+        // double utility = rand() / ((float) RAND_MAX); // Change it later!!!
         return make_pair(utility, Move());
     }
 
@@ -727,7 +732,7 @@ bestAction Player::minValueRemoveRing(int depth, bool hasMoved)
 
 void Player::playOpponentMove()
 {
-    cout << "in play opp move" << endl;
+    // cout << "in play opp move" << endl;
     // Take the opponent move as input
     string oppMove;
     // cin.ignore(); // To ignore any '\n' before
@@ -738,6 +743,10 @@ void Player::playOpponentMove()
     Move move(oppMove, game->getBoardSize());
     cout << move.cartesianToPolarString(game->getBoardSize()) << endl;
     game->makeMove(move);
+
+    game->displayHexagonalBoard();
+    cout << "Player " << (game->getPlayerToMove() * -1) << " played: " << move.cartesianToPolarString(game->getBoardSize()) << endl;
+    cout << "Player " << game->getPlayerToMove() << "'s turn: ";
 }
 
 void Player::playGame()
@@ -762,7 +771,7 @@ void Player::playGame()
         // cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
         game->displayHexagonalBoard();
-        cout << "Player " << game->getPlayerToMove() << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
+        cout << "Player " << (game->getPlayerToMove() * -1) << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
         cout << "Player " << game->getPlayerToMove() << "'s turn: ";
 
         // Get other player's move and play

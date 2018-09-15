@@ -2,16 +2,17 @@
 #include "Player.h"
 #include <iostream>
 #include <string>
+#include <cstdlib>
+#include <ctime>
 // #include <assert.h>
 using namespace std;
 
-bool testerUtility ();
+bool testerUtility();
 
 int main(int argc, char **argv)
 {
     // testerUtility();
-	// return 0;
-
+    // return 0;
 
     int player;
     int N;
@@ -25,6 +26,10 @@ int main(int argc, char **argv)
     player = stoi(ins[0]);
     N = stoi(ins[1]);
     timeLeft = stof(ins[2]);
+
+    // Seeding for random number generation
+    srand(time(NULL));
+
     // cin >> player >> N >> timeLeft;
 
     player = (player == 1) ? 1 : -1;
@@ -32,9 +37,9 @@ int main(int argc, char **argv)
     // Spawn an instance of Player and play the game
     Player *yinsh = new Player(player, N);
     yinsh->playGame();
-	// yinsh -> game -> displayBoard();
-	// yinsh -> game -> dispLims();
-	// yinsh -> game -> displayNrows();
+    // yinsh -> game -> displayBoard();
+    // yinsh -> game -> dispLims();
+    // yinsh -> game -> displayNrows();
 
     return 0;
 }
