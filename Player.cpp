@@ -282,8 +282,14 @@ bestAction Player::maxValueMoveRing(int depth, bool hasMoved)
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
 
+    // verify moves
+    // for (auto microMv = moves.begin(); microMv != moves.end(); microMv++) {
+    //     cout << (*microMv).cartesianToPolarString(game->getBoardSize()) << " | " << (*microMv).moveInfo.size() << endl;
+    // }
+
     // Maintain a maximun
     bestAction maxAction = make_pair(-INF, Move());
+    // return maxAction;
 
     // Iterate over all possible moves and retrieve maximum
     for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)

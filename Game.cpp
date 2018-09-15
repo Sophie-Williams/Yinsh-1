@@ -201,8 +201,10 @@ void Game::updateGameState(int player)
 		}
 		else
 		{
+			// gameStatePos = 2; // REMOVE IT AFTER getAllContiguousMarkers Is Debugged
+			// return;
 			contiguousMarkers markers = getAllContiguousMarkers(1);
-			cerr << "In Game::updateGameState markers+.size()=" << markers.size() << endl;
+			// cerr << "In Game::updateGameState markers+.size()=" << markers.size() << endl;
 			if (markers.size() == 0)
 			{
 				// No marker streak to remove
@@ -224,8 +226,10 @@ void Game::updateGameState(int player)
 		}
 		else
 		{
+			// gameStateNeg = 2; // REMOVE IT AFTER getAllContiguousMarkers Is Debugged
+			// return;
 			contiguousMarkers markers = getAllContiguousMarkers(-1);
-			cerr << "In Game::updateGameState markers-.size()=" << markers.size() << endl;
+			// cerr << "In Game::updateGameState markers-.size()=" << markers.size() << endl;
 			if (markers.size() == 0)
 			{
 				// No marker streak to remove
@@ -374,11 +378,11 @@ bool Game::unmakeMicroMove(MicroMove move)
 		break;
 	case 'M':
 		// Select Ring and Reverse Move
-		return moveRing(move.moveInfo[0], move.moveInfo[1], false);
+		return moveRing(move.moveInfo[1], move.moveInfo[0], false);
 		break;
 	case 'R':
 		// Repopulate the Row
-		return populateMarkers(move.moveInfo[0], move.moveInfo[1], playerToMove);
+		return populateMarkers(move.moveInfo[1], move.moveInfo[0], playerToMove);
 		break;
 	default:
 		// None of the above types of moves
