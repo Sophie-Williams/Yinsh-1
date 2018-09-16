@@ -392,7 +392,7 @@ bestAction Player::maxValueRemoveRow(int depth, bool hasMoved)
         game->setGameState(4); // Remove a Ring
 
         // have to remove  a row
-        bestAction ourAction = maxValue(depth, true);
+        bestAction ourAction = maxValue(depth, hasMoved);
 
         // if better
         if (ourAction.first > maxAction.first)
@@ -648,7 +648,7 @@ bestAction Player::minValueRemoveRow(int depth, bool hasMoved)
         game->setGameState(4); // Remove a Ring
 
         // have to remove  a row
-        bestAction ourAction = maxValue(depth, true);
+        bestAction ourAction = maxValue(depth, hasMoved);
 
         // if better
         if (ourAction.first < minAction.first)
