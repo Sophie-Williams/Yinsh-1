@@ -8,13 +8,19 @@
 #include <ctime>
 using namespace std;
 
-Player::Player(int playerType, int numRings)
+Player::Player(int playerType, int numRings, double totalTime, double currentTime)
 {
     player = playerType;
-    minimaxDepth = 1;
+    minimaxDepth = 3;
 
     // Initialise the game instance
     game = new Game(numRings, playerType);
+
+    // Set up timers
+    startTime = currentTime;
+    timeAlloted = totalTime - 1.5; // A one second safeguard
+    timeSpent = (time(NULL) - startTime); 
+    timeRemaining = timeAlloted - timeSpent;
 }
 
 // Old functions
@@ -157,14 +163,14 @@ bestAction Player::minValue(int depth, bool hasMovedYet)
     return minAction;
 }
 */
-bestAction Player::maxValue(int depth, bool hasMoved)
+bestAction Player::maxValue(int depth, bool hasMoved, double alpha, double beta)
 {
     // Compute the best move to play
     if (depth <= 0 || game->isTerminalState())
     {
         // Cut off the minimax search
-        // double utility = game->getUtility();
-        double utility = 0.0;
+        double utility = game->getUtility();
+        // double utility = 0.0;
         // double utility = ((float) RAND_MAX); // CHANGE THIS LATER!!!!!!!!
         return make_pair(utility, Move());
     }
@@ -175,27 +181,29 @@ bestAction Player::maxValue(int depth, bool hasMoved)
     {
     case 1:
         // Place a ring
-        return maxValuePlaceRing(depth, hasMoved);
+        return maxValuePlaceRing(depth, hasMoved, alpha, beta);
     case 2:
         // Move a ring
-        return maxValueMoveRing(depth, hasMoved);
+        // Place ring stage is going to be over => see more deeply
+        // minimaxDepth = 4;
+        return maxValueMoveRing(depth, hasMoved, alpha, beta);
     case 3:
         // Remove a row
-        return maxValueRemoveRow(depth, hasMoved);
+        return maxValueRemoveRow(depth, hasMoved, alpha, beta);
     case 4:
         // Remove a ring
-        return maxValueRemoveRing(depth, hasMoved);
+        return maxValueRemoveRing(depth, hasMoved, alpha, beta);
     }
 }
 
-bestAction Player::minValue(int depth, bool hasMoved)
+bestAction Player::minValue(int depth, bool hasMoved, double alpha, double beta)
 {
     // Compute the best move to play
     if (depth <= 0 || game->isTerminalState())
     {
         // Cut off the minimax search
-        // double utility = game->getUtility();
-        double utility = 0.0;
+        double utility = game->getUtility();
+        // double utility = 0.0;
         // double utility = rand() / ((float) RAND_MAX); // Change it later!!!
         return make_pair(utility, Move());
     }
@@ -206,20 +214,20 @@ bestAction Player::minValue(int depth, bool hasMoved)
     {
     case 1:
         // Place a ring
-        return minValuePlaceRing(depth, hasMoved);
+        return minValuePlaceRing(depth, hasMoved, alpha, beta);
     case 2:
         // Move a ring
-        return minValueMoveRing(depth, hasMoved);
+        return minValueMoveRing(depth, hasMoved, alpha, beta);
     case 3:
         // Remove a row
-        return minValueRemoveRow(depth, hasMoved);
+        return minValueRemoveRow(depth, hasMoved, alpha, beta);
     case 4:
         // Remove a ring
-        return minValueRemoveRing(depth, hasMoved);
+        return minValueRemoveRing(depth, hasMoved, alpha, beta);
     }
 }
 
-bestAction Player::maxValuePlaceRing(int depth, bool hasMoved)
+bestAction Player::maxValuePlaceRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // cerr << "In Player::maxValuePlaceRing\n";
     // Commpute best move to place ring
@@ -260,7 +268,7 @@ bestAction Player::maxValuePlaceRing(int depth, bool hasMoved)
         game->flipPlayerToMove();
 
         // Give turn to opponent
-        bestAction oppAction = minValue(depth - 1, hasMoved);
+        bestAction oppAction = minValue(depth - 1, hasMoved, alpha, beta);
 
         // if better
         if (oppAction.first > maxAction.first)
@@ -277,12 +285,21 @@ bestAction Player::maxValuePlaceRing(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in deapplying move Player::maxValuePlaceRing\n";
+
+        // Pruning
+        if (maxAction.first >= beta)
+        {
+            // Just return it already
+            return maxAction;
+        }
+
+        alpha = max(alpha, maxAction.first);
     }
 
     return maxAction;
 }
 
-bestAction Player::maxValueMoveRing(int depth, bool hasMoved)
+bestAction Player::maxValueMoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -318,7 +335,7 @@ bestAction Player::maxValueMoveRing(int depth, bool hasMoved)
         if (game->getGameState() == 3)
         {
             // have to remove  a row
-            bestAction ourAction = maxValue(depth, true);
+            bestAction ourAction = maxValue(depth, true, alpha, beta);
 
             // if better
             if (ourAction.first > maxAction.first)
@@ -341,7 +358,7 @@ bestAction Player::maxValueMoveRing(int depth, bool hasMoved)
 
             // Give turn to opponent
             game->flipPlayerToMove();
-            bestAction oppAction = minValue(depth - 1, hasMoved);
+            bestAction oppAction = minValue(depth - 1, hasMoved, alpha, beta);
 
             // if better
             if (oppAction.first > maxAction.first)
@@ -360,12 +377,21 @@ bestAction Player::maxValueMoveRing(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in applying move Player::maxValueMoveRing\n";
+
+        // Pruning
+        if (maxAction.first >= beta)
+        {
+            // Just return it already
+            return maxAction;
+        }
+
+        alpha = max(alpha, maxAction.first);
     }
 
     return maxAction;
 }
 
-bestAction Player::maxValueRemoveRow(int depth, bool hasMoved)
+bestAction Player::maxValueRemoveRow(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -392,7 +418,7 @@ bestAction Player::maxValueRemoveRow(int depth, bool hasMoved)
         game->setGameState(4); // Remove a Ring
 
         // have to remove  a row
-        bestAction ourAction = maxValue(depth, true);
+        bestAction ourAction = maxValue(depth, hasMoved, alpha, beta);
 
         // if better
         if (ourAction.first > maxAction.first)
@@ -410,12 +436,21 @@ bestAction Player::maxValueRemoveRow(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in applying move Player::maxValueRemoveRow\n";
+
+        // Pruning
+        if (maxAction.first >= beta)
+        {
+            // Just return it already
+            return maxAction;
+        }
+
+        alpha = max(alpha, maxAction.first);
     }
 
     return maxAction;
 }
 
-bestAction Player::maxValueRemoveRing(int depth, bool hasMoved)
+bestAction Player::maxValueRemoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -445,7 +480,7 @@ bestAction Player::maxValueRemoveRing(int depth, bool hasMoved)
         if (game->getGameState() == 3 || !hasMoved)
         {
             // have to remove a row or move a ring is not done before
-            bestAction ourAction = maxValue(depth, hasMoved);
+            bestAction ourAction = maxValue(depth, hasMoved, alpha, beta);
 
             // if better
             if (ourAction.first > maxAction.first)
@@ -468,7 +503,7 @@ bestAction Player::maxValueRemoveRing(int depth, bool hasMoved)
 
             // Give turn to opponent
             game->flipPlayerToMove();
-            bestAction oppAction = minValue(depth - 1, hasMoved);
+            bestAction oppAction = minValue(depth - 1, hasMoved, alpha, beta);
 
             // if better
             if (oppAction.first > maxAction.first)
@@ -487,12 +522,21 @@ bestAction Player::maxValueRemoveRing(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in applying move Player::maxValueRemoveRing\n";
+
+        // Pruning
+        if (maxAction.first >= beta)
+        {
+            // Just return it already
+            return maxAction;
+        }
+
+        alpha = max(alpha, maxAction.first);
     }
 
     return maxAction;
 }
 
-bestAction Player::minValuePlaceRing(int depth, bool hasMoved)
+bestAction Player::minValuePlaceRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -525,7 +569,7 @@ bestAction Player::minValuePlaceRing(int depth, bool hasMoved)
         game->flipPlayerToMove();
 
         // Give turn to opponent
-        bestAction oppAction = minValue(depth - 1, hasMoved);
+        bestAction oppAction = minValue(depth - 1, hasMoved, alpha, beta);
 
         // if better
         if (oppAction.first < minAction.first)
@@ -542,12 +586,21 @@ bestAction Player::minValuePlaceRing(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in deapplying move Player::minValuePlaceRing\n";
+
+        // Pruning
+        if (minAction.first <= alpha)
+        {
+            // Just return it already
+            return minAction;
+        }
+
+        beta = min(beta, minAction.first);
     }
 
     return minAction;
 }
 
-bestAction Player::minValueMoveRing(int depth, bool hasMoved)
+bestAction Player::minValueMoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -575,7 +628,7 @@ bestAction Player::minValueMoveRing(int depth, bool hasMoved)
         if (game->getGameState() == 3)
         {
             // have to remove  a row
-            bestAction ourAction = maxValue(depth, true);
+            bestAction ourAction = maxValue(depth, true, alpha, beta);
 
             // if better
             if (ourAction.first < minAction.first)
@@ -598,7 +651,7 @@ bestAction Player::minValueMoveRing(int depth, bool hasMoved)
 
             // Give turn to opponent
             game->flipPlayerToMove();
-            bestAction oppAction = minValue(depth - 1, hasMoved);
+            bestAction oppAction = minValue(depth - 1, hasMoved, alpha, beta);
 
             // if better
             if (oppAction.first < minAction.first)
@@ -617,12 +670,21 @@ bestAction Player::minValueMoveRing(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in applying move Player::minValueMoveRing\n";
+
+        // Pruning
+        if (minAction.first <= alpha)
+        {
+            // Just return it already
+            return minAction;
+        }
+
+        beta = min(beta, minAction.first);
     }
 
     return minAction;
 }
 
-bestAction Player::minValueRemoveRow(int depth, bool hasMoved)
+bestAction Player::minValueRemoveRow(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -648,7 +710,7 @@ bestAction Player::minValueRemoveRow(int depth, bool hasMoved)
         game->setGameState(4); // Remove a Ring
 
         // have to remove  a row
-        bestAction ourAction = maxValue(depth, true);
+        bestAction ourAction = maxValue(depth, hasMoved, alpha, beta);
 
         // if better
         if (ourAction.first < minAction.first)
@@ -666,12 +728,21 @@ bestAction Player::minValueRemoveRow(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in applying move Player::minValueRemoveRow\n";
+
+        // Pruning
+        if (minAction.first <= alpha)
+        {
+            // Just return it already
+            return minAction;
+        }
+
+        beta = min(beta, minAction.first);
     }
 
     return minAction;
 }
 
-bestAction Player::minValueRemoveRing(int depth, bool hasMoved)
+bestAction Player::minValueRemoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
     vector<MicroMove> moves = game->getAllMoves();
@@ -700,7 +771,7 @@ bestAction Player::minValueRemoveRing(int depth, bool hasMoved)
         if (game->getGameState() == 3 || !hasMoved)
         {
             // have to remove a row or move a ring is not done before
-            bestAction ourAction = maxValue(depth, hasMoved);
+            bestAction ourAction = maxValue(depth, hasMoved, alpha, beta);
 
             // if better
             if (ourAction.first < minAction.first)
@@ -723,7 +794,7 @@ bestAction Player::minValueRemoveRing(int depth, bool hasMoved)
 
             // Give turn to opponent
             game->flipPlayerToMove();
-            bestAction oppAction = minValue(depth - 1, hasMoved);
+            bestAction oppAction = minValue(depth - 1, hasMoved, alpha, beta);
 
             // if better
             if (oppAction.first < minAction.first)
@@ -742,6 +813,15 @@ bestAction Player::minValueRemoveRing(int depth, bool hasMoved)
 
         if (!success)
             cerr << "Failure in applying move Player::minValueRemoveRing\n";
+
+        // Pruning
+        if (minAction.first <= alpha)
+        {
+            // Just return it already
+            return minAction;
+        }
+
+        beta = min(beta, minAction.first);
     }
 
     return minAction;
@@ -761,7 +841,7 @@ void Player::playOpponentMove()
     // cout << move.cartesianToPolarString(game->getBoardSize()) << endl;
     game->makeMove(move);
 
-    game->displayHexagonalBoard();
+    // game->displayHexagonalBoard();
     cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << move.cartesianToPolarString(game->getBoardSize()) << endl;
     cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
 }
@@ -782,16 +862,47 @@ void Player::playGame()
     // play the game
     while (true)
     {
+        double currTime = time(NULL);
+
         // Get our move and play and then tell the opponent
-        Move ourMove = maxValue(minimaxDepth, false).second;
+        Move ourMove = maxValue(minimaxDepth, false, -INF, INF).second;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
-        game->displayHexagonalBoard();
+        // game->displayHexagonalBoard();
         cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
         cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
+
+        // Update game strategy after each iteration
+        updateGameStrategy(currTime);
 
         // Get other player's move and play
         playOpponentMove();
     }
+}
+
+void Player::updateGameStrategy(double beginTime) {
+    // Update the timers
+    timeSpent += time(NULL) - beginTime;
+    timeRemaining = timeAlloted - timeSpent;
+
+    // if (game->getGameState() == 1) {
+    //     // In ring placing stage => Play low depth
+    //     minimaxDepth = 2;
+    // } else if 
+    if (timeSpent < 5) {
+        // In initial stages => play fast
+        minimaxDepth = 3;
+    } else if (timeRemaining > 40) {
+        // In crucial game play => play thoughtfully
+        minimaxDepth = 4;
+    } else if (timeRemaining > 2) {
+        // Pace up
+        minimaxDepth = 3;
+    } else {
+        // Time is money
+        minimaxDepth = 2;
+    }
+
+    cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << endl;
 }

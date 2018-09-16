@@ -29,23 +29,31 @@ class Player
     Game *game;
 
     /**
+     * Timings
+     */
+    double startTime;
+    double timeAlloted;
+    double timeSpent;
+    double timeRemaining;
+
+    /**
      * Returns the best Move to play from the current game state for current player
      * hasMovedYet means in the calling history has the concerned player played a ring moving game
      */
-    bestAction maxValue(int depth, bool hasMovedYet);
-    bestAction maxValuePlaceRing(int depth, bool hasMovedYet);
-    bestAction maxValueMoveRing(int depth, bool hasMovedYet);
-    bestAction maxValueRemoveRow(int depth, bool hasMovedYet);
-    bestAction maxValueRemoveRing(int depth, bool hasMovedYet);
+    bestAction maxValue(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction maxValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction maxValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction maxValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction maxValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta);
 
     /**
      * Returns the best Move to play from the current game state for opponent player
      */
-    bestAction minValue(int depth, bool hasMovedYet);
-    bestAction minValuePlaceRing(int depth, bool hasMovedYet);
-    bestAction minValueMoveRing(int depth, bool hasMovedYet);
-    bestAction minValueRemoveRow(int depth, bool hasMovedYet);
-    bestAction minValueRemoveRing(int depth, bool hasMovedYet);
+    bestAction minValue(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction minValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction minValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction minValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction minValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta);
 
     /**
      * Takes in input for the opponent's move
@@ -59,12 +67,17 @@ class Player
      * @Constructor
      * Input: Player 0 (1) or Player 1 (-1)
      */
-    Player(int playerType, int numRings);
+    Player(int playerType, int numRings, double totatTime, double currentTime);
 
     /**
      * Game playing function
      */
     void playGame();
+
+    /**
+     * Updating timers and game strategy
+     */
+    void updateGameStrategy(double beginTime);
 };
 
 #endif // PLAYER_H

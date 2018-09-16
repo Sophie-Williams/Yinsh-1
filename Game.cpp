@@ -1401,7 +1401,7 @@ double Game::computeMetric()
 			}
 			else if (board[i][j] == 0)
 			{
-				metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.1 * nrows[i][j];
+				metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.05 * nrows[i][j];
 			}
 			else if (board[i][j] == 2 * playerAssgn)
 			{
@@ -1413,11 +1413,11 @@ double Game::computeMetric()
 			}
 			else if (board[i][j] == 1)
 			{
-				metric += playerAssgn * (1 - 0.2 * playerNeg[i][j] - 0.05 * playerPos[i][j]) * nrows[i][j];
+				metric += playerAssgn * (1 - 0.1 * playerNeg[i][j] - 0.05 * playerPos[i][j]) * nrows[i][j];
 			}
 			else
 			{
-				metric += playerAssgn * (1 - 0.2 * playerPos[i][j] - 0.05 * playerNeg[i][j]) * nrows[i][j];
+				metric += playerAssgn * (1 - 0.1 * playerPos[i][j] - 0.05 * playerNeg[i][j]) * nrows[i][j];
 			}
 			playerPos[i][j] = 0;
 			playerNeg[i][j] = 0;
