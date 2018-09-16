@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     player = (player == 1) ? 1 : -1;
 
     // Spawn an instance of Player and play the game
-    Player *yinsh = new Player(player, N);
+    Player *yinsh = new Player(player, N, timeLeft, time(NULL));
     yinsh->playGame();
     // yinsh -> game -> displayBoard();
     // yinsh -> game -> dispLims();
