@@ -94,8 +94,8 @@ void testMakeMove()
         // cout << game.getRingsPositive();
 
         game.makeMove(move);
-        game.displayHexagonalBoard();
-        cout << "Player " <<  (game.getPlayerToMove()*-1) << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
+        // game.displayHexagonalBoard();
+        // cout << "Player " <<  (game.getPlayerToMove()*-1) << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
 		cout << game.getUtility() << endl;
         // game.getPlayerToMove() *= -1; // flip turn
         // cout << "Player " << game.getPlayerToMove() << "'s turn: ";

@@ -269,6 +269,7 @@ class Game
 	 * Computes metric based on player influence
 	 */
 	double computeMetric();
+	double computeMetric2(int player);
 
     /**
      * Returns the utility of this state w.r.t. `playerToMove`

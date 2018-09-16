@@ -1292,6 +1292,102 @@ void Game::computePlayerNeg()
 	}
 }
 
+double Game::computeMetric2(int player){
+	int chk = player;
+	int i, j, ctr;
+	int* rows = new int[numRingsForRow+1];
+	double coeffs[] = {0.3, 0.4, 0.6, 0.8, 1, 2};
+	
+	for (i = 0; i <= numRingsForRow; i++){
+		rows[i] = 0;
+	}
+	
+	for (i = 0; i < boardSize; i++)
+	{
+		ctr = 0;
+		for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
+		{
+			if (board[i][j] == chk)
+				ctr++;
+			else {
+				if (ctr > numRingsForRow){
+					rows[numRingsForRow] += 1;
+				}
+				else if (ctr > 0){
+					rows[ctr-1] += 1;
+				}
+				ctr = 0;
+			}
+		}
+		if (ctr > numRingsForRow){
+			rows[numRingsForRow] += 1;
+		}
+		else if (ctr > 0){
+			rows[ctr-1] += 1;
+		}
+	}
+
+	for (i = 0; i < boardSize; i++)
+	{
+		ctr = 0;
+		for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
+		{
+			if (board[j][i] == chk)
+				ctr++;
+			else{
+				if (ctr > numRingsForRow){
+					rows[numRingsForRow] += 1;
+				}
+				else if (ctr > 0){
+					rows[ctr-1] += 1;
+				}
+				ctr = 0;	
+			}
+		}
+		if (ctr > numRingsForRow){
+			rows[numRingsForRow] += 1;
+		}
+		else if (ctr > 0){
+			rows[ctr-1] += 1;
+		}
+	}
+
+	int it;
+	for (i = 0; i < 2 * boardSize - 1; i++)
+	{
+		if (xy_lims.at(i).first == 0 && xy_lims.at(i).second == 0)
+			continue;
+		ctr = 0;
+		it = xy_lims.at(i).first - boardSize + i + 1;
+		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
+		{
+			if (board[it][j] == chk)
+				ctr++;
+			else{
+				if (ctr > numRingsForRow){
+					rows[numRingsForRow] += 1;
+				}
+				else if (ctr > 0){
+					rows[ctr-1] += 1;
+				}
+				ctr = 0;
+			}
+		}
+		if (ctr > numRingsForRow){
+			rows[numRingsForRow] += 1;
+		}
+		else if (ctr > 0){
+			rows[ctr-1] += 1;
+		}
+	}
+	
+	double metric = 0.0;
+	for (i = 0; i<=numRingsForRow; i++){
+		metric += (rows[i]*coeffs[i]);
+	}
+	return metric;
+}
+
 double Game::computeMetric()
 {
 	double metric = 0;
@@ -1334,13 +1430,13 @@ double Game::getUtility()
 {
 	// Return the utility of the current state
 	// Utility of win state should be highest and of lose state should be minimum
-	computePlayerPos();
-	computePlayerNeg();
+	// computePlayerPos();
+	// computePlayerNeg();
 	// displayP();
 	// cout << "---------------------------" <<endl;
 	// displayN();
 	// cout << "---------------------------" <<endl;        
-	double util = computeMetric();
-	return util+ 200 * playerAssgn * ((int)ringsPositive.size() - (int)ringsNegative.size());
+	double util = computeMetric2(playerAssgn)-computeMetric2(-1*playerAssgn);
+	return util+ 20 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
 }
