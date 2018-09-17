@@ -1365,7 +1365,7 @@ double Game::computeMetric2(int player)
 	int chk = player;
 	int i, j, ctr, prev, dist;
 	// int* rows = new int[numRingsForRow];
-	vector<int> rows(numRingsForRow, 0);
+	vector<double> rows(numRingsForRow, 0.0);
 	double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
 
 	// for (i = 0; i <= numRingsForRow; i++){
@@ -1389,8 +1389,10 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[i][j] == -2 * chk)
-				{
+				if (board[i][j] == -2*chk){
+					if (prev != -1){
+						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
+					}
 					prev = -1;
 				}
 				dist++;
@@ -1420,8 +1422,10 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[j][i] == -2 * chk)
-				{
+				if (board[j][i] == -2*chk){
+					if (prev != -1){
+						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
+					}					
 					prev = -1;
 				}
 				dist++;
@@ -1455,8 +1459,10 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[it][j] == -2 * chk)
-				{
+				if (board[it][j] == -2*chk){
+					if (prev != -1){
+						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
+					}
 					prev = -1;
 				}
 				dist++;
@@ -1489,25 +1495,25 @@ double Game::computeMetric()
 			{
 				continue;
 			}
-			else if (board[i][j] == 0)
-			{
-				metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.1 * nrows[i][j];
-			}
-			else if (board[i][j] == 2 * playerAssgn)
-			{
-				metric += 0.5 * nrows[i][j];
-			}
-			else if (board[i][j] == -2 * playerAssgn)
-			{
-				metric -= 0.5 * nrows[i][j];
-			}
+			// else if (board[i][j] == 0)
+			// {
+				// metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.3 * nrows[i][j];
+			// }
+			// else if (board[i][j] == 2 * playerAssgn)
+			// {
+				// metric += 0.5 * nrows[i][j];
+			// }
+			// else if (board[i][j] == -2 * playerAssgn)
+			// {
+				// metric -= 0.5 * nrows[i][j];
+			// }
 			else if (board[i][j] == 1)
 			{
-				metric += playerAssgn * (1 - 0.1 * playerNeg[i][j] - 0.05 * playerPos[i][j]) * nrows[i][j];
+				metric += playerAssgn * (-1*0.6 * playerNeg[i][j] - 0.15 * playerPos[i][j]) * nrows[i][j];
 			}
 			else
 			{
-				metric += playerAssgn * (1 - 0.1 * playerPos[i][j] - 0.05 * playerNeg[i][j]) * nrows[i][j];
+				metric += playerAssgn * (-1*0.6 * playerPos[i][j] - 0.15 * playerNeg[i][j]) * nrows[i][j];
 			}
 			playerPos[i][j] = 0;
 			playerNeg[i][j] = 0;
@@ -1524,8 +1530,9 @@ double Game::getUtility()
 	// cout << "---------------------------" <<endl;
 	// displayN();
 	// cout << "---------------------------" <<endl;
-	double util = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
-	return util + 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
+	double util1 = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
+	double util2 = getRingUtility();
+	return util1 + 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
 }
 
