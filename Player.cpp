@@ -13,7 +13,7 @@ Player::Player(int playerType, int numRings, double totalTime, double currentTim
     player = playerType;
     minimaxDepth = 3;
     movesPlayed = 0;
-    forwardPruneParameter = 0.9;
+    forwardPruneParameter = 1;
 
     // Initialise the game instance
     game = new Game(numRings, playerType);
