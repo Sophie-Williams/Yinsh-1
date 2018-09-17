@@ -270,6 +270,7 @@ class Game
 	 */
 	double computeMetric();
 	double computeMetric2(int player);
+	int selectRowLength(int curr, int prev, int dist);
 
     /**
      * Returns the utility of this state w.r.t. `playerToMove`

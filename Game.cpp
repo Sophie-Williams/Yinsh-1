@@ -1292,11 +1292,20 @@ void Game::computePlayerNeg()
 	}
 }
 
+int Game::selectRowLength(int curr, int prev, int dist){
+	if (curr>=numRingsForRow)
+		return numRingsForRow-1;
+	if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
+		return curr-1; 
+	return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
+	
+}
+
 double Game::computeMetric2(int player){
 	int chk = player;
-	int i, j, ctr;
-	int* rows = new int[numRingsForRow+1];
-	double coeffs[] = {0.3, 0.4, 0.6, 0.8, 1, 2};
+	int i, j, ctr, prev, dist;
+	int* rows = new int[numRingsForRow];
+	double coeffs[] = {0.3, 0.4, 0.6, 0.8, 1};
 	
 	for (i = 0; i <= numRingsForRow; i++){
 		rows[i] = 0;
@@ -1305,50 +1314,48 @@ double Game::computeMetric2(int player){
 	for (i = 0; i < boardSize; i++)
 	{
 		ctr = 0;
+		prev = -1;
+		dist = -1;
 		for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
 		{
 			if (board[i][j] == chk)
 				ctr++;
 			else {
-				if (ctr > numRingsForRow){
-					rows[numRingsForRow] += 1;
+				if (ctr > 0){
+					rows[selectRowLength(ctr, prev, dist)] += 1;
+					dist = 0;
+					prev = ctr;
 				}
-				else if (ctr > 0){
-					rows[ctr-1] += 1;
-				}
+				dist++;
 				ctr = 0;
 			}
 		}
-		if (ctr > numRingsForRow){
-			rows[numRingsForRow] += 1;
-		}
-		else if (ctr > 0){
-			rows[ctr-1] += 1;
+		if (ctr > 0){
+			rows[selectRowLength(ctr, prev, dist)] += 1;
 		}
 	}
 
 	for (i = 0; i < boardSize; i++)
 	{
 		ctr = 0;
+		prev = -1;
+		dist = -1;
 		for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
 		{
 			if (board[j][i] == chk)
 				ctr++;
 			else{
-				if (ctr > numRingsForRow){
-					rows[numRingsForRow] += 1;
+				if (ctr > 0){
+					rows[selectRowLength(ctr, prev, dist)] += 1;
+					dist = 0;
+					prev = ctr;
 				}
-				else if (ctr > 0){
-					rows[ctr-1] += 1;
-				}
+				dist++;
 				ctr = 0;	
 			}
 		}
-		if (ctr > numRingsForRow){
-			rows[numRingsForRow] += 1;
-		}
-		else if (ctr > 0){
-			rows[ctr-1] += 1;
+		if (ctr > 0){
+			rows[selectRowLength(ctr, prev, dist)] += 1;
 		}
 	}
 
@@ -1358,31 +1365,32 @@ double Game::computeMetric2(int player){
 		if (xy_lims.at(i).first == 0 && xy_lims.at(i).second == 0)
 			continue;
 		ctr = 0;
+		prev = -1;
+		dist = -1;
 		it = xy_lims.at(i).first - boardSize + i + 1;
 		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
 		{
 			if (board[it][j] == chk)
 				ctr++;
 			else{
-				if (ctr > numRingsForRow){
-					rows[numRingsForRow] += 1;
+				if (ctr > 0){
+					rows[selectRowLength(ctr, prev, dist)] += 1;
+					dist = 0;
+					prev = ctr;
 				}
-				else if (ctr > 0){
-					rows[ctr-1] += 1;
-				}
+				dist++;
 				ctr = 0;
 			}
 		}
-		if (ctr > numRingsForRow){
-			rows[numRingsForRow] += 1;
-		}
-		else if (ctr > 0){
-			rows[ctr-1] += 1;
+		if (ctr > 0){
+			rows[selectRowLength(ctr, prev, dist)] += 1;
 		}
 	}
 	
+	
 	double metric = 0.0;
-	for (i = 0; i<=numRingsForRow; i++){
+	for (i = 0; i<numRingsForRow; i++){
+		// cout << rows[i] << " ";
 		metric += (rows[i]*coeffs[i]);
 	}
 	return metric;
