@@ -900,7 +900,7 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
-    else if (movesPlayed < 12)
+    else if (movesPlayed < 22)
     {
         minimaxDepth = 3;
     }

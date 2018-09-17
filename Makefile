@@ -1,5 +1,5 @@
 all: main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp
-	  g++ --std=c++11 -o dSwnUAB main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
+	  g++ --std=c++11 -o dSwnnUAB main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
 
 clean: 
 	del -f *.exe
