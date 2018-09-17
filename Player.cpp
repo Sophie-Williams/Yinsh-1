@@ -13,6 +13,7 @@ Player::Player(int playerType, int numRings, double totalTime, double currentTim
     player = playerType;
     minimaxDepth = 3;
     movesPlayed = 0;
+    forwardPruneParameter = 0.9;
 
     // Initialise the game instance
     game = new Game(numRings, playerType);
@@ -248,7 +249,9 @@ bestAction Player::maxValuePlaceRing(int depth, bool hasMoved, double alpha, dou
     // return maxAction;
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'P')
@@ -318,7 +321,9 @@ bestAction Player::maxValueMoveRing(int depth, bool hasMoved, double alpha, doub
     // return maxAction;
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'M')
@@ -404,7 +409,9 @@ bestAction Player::maxValueRemoveRow(int depth, bool hasMoved, double alpha, dou
     bestAction maxAction = make_pair(-INF, Move());
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'R')
@@ -463,7 +470,9 @@ bestAction Player::maxValueRemoveRing(int depth, bool hasMoved, double alpha, do
     bestAction maxAction = make_pair(-INF, Move());
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'X')
@@ -549,7 +558,9 @@ bestAction Player::minValuePlaceRing(int depth, bool hasMoved, double alpha, dou
     bestAction minAction = make_pair(INF, Move());
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'P')
@@ -613,7 +624,9 @@ bestAction Player::minValueMoveRing(int depth, bool hasMoved, double alpha, doub
     bestAction minAction = make_pair(INF, Move());
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'M')
@@ -697,7 +710,9 @@ bestAction Player::minValueRemoveRow(int depth, bool hasMoved, double alpha, dou
     bestAction minAction = make_pair(INF, Move());
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'R')
@@ -755,7 +770,9 @@ bestAction Player::minValueRemoveRing(int depth, bool hasMoved, double alpha, do
     bestAction minAction = make_pair(INF, Move());
 
     // Iterate over all possible moves and retrieve maximum
-    for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
+    int movesSize = moves.size();
+    int i = 0;
+    for (auto microMv = moves.begin(); microMv != moves.end() && i <= forwardPruneParameter * movesSize; microMv++, i++)
     {
         // Error checking while / for testing
         if ((*microMv).getType() != 'X')
@@ -900,15 +917,19 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
-    else if (movesPlayed < 22)
-    {
+    // else if (movesPlayed < 18)
+    // {
+    //     minimaxDepth = 3;
+    // }
+    else if (movesPlayed < 20) {
         minimaxDepth = 3;
     }
-    else if (timeRemaining > 40)
+    else if (timeRemaining > 30)
     {
         // In crucial game play => play thoughtfully
         minimaxDepth = 4;
     }
+    // else if ()
     else if (timeRemaining > 2)
     {
         // Pace up

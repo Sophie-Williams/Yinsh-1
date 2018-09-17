@@ -1389,10 +1389,8 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[i][j] == -2*chk){
-					if (prev != -1){
-						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
-					}
+				if (board[i][j] == -2 * chk)
+				{
 					prev = -1;
 				}
 				dist++;
@@ -1422,10 +1420,8 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[j][i] == -2*chk){
-					if (prev != -1){
-						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
-					}					
+				if (board[j][i] == -2 * chk)
+				{
 					prev = -1;
 				}
 				dist++;
@@ -1459,10 +1455,8 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[it][j] == -2*chk){
-					if (prev != -1){
-						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
-					}
+				if (board[it][j] == -2 * chk)
+				{
 					prev = -1;
 				}
 				dist++;
@@ -1495,25 +1489,25 @@ double Game::computeMetric()
 			{
 				continue;
 			}
-			// else if (board[i][j] == 0)
-			// {
-				// metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.3 * nrows[i][j];
-			// }
-			// else if (board[i][j] == 2 * playerAssgn)
-			// {
-				// metric += 0.5 * nrows[i][j];
-			// }
-			// else if (board[i][j] == -2 * playerAssgn)
-			// {
-				// metric -= 0.5 * nrows[i][j];
-			// }
+			else if (board[i][j] == 0)
+			{
+				metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.1 * nrows[i][j];
+			}
+			else if (board[i][j] == 2 * playerAssgn)
+			{
+				metric += 0.5 * nrows[i][j];
+			}
+			else if (board[i][j] == -2 * playerAssgn)
+			{
+				metric -= 0.5 * nrows[i][j];
+			}
 			else if (board[i][j] == 1)
 			{
-				metric += playerAssgn * (-1*0.6 * playerNeg[i][j] - 0.15 * playerPos[i][j]) * nrows[i][j];
+				metric += playerAssgn * (-1*0.2 * playerNeg[i][j] - 0.05 * playerPos[i][j]) * nrows[i][j];
 			}
 			else
 			{
-				metric += playerAssgn * (-1*0.6 * playerPos[i][j] - 0.15 * playerNeg[i][j]) * nrows[i][j];
+				metric += playerAssgn * (-1*0.2 * playerPos[i][j] - 0.05 * playerNeg[i][j]) * nrows[i][j];
 			}
 			playerPos[i][j] = 0;
 			playerNeg[i][j] = 0;
