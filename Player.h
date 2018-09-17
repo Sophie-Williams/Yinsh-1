@@ -35,7 +35,8 @@ class Player
     double timeAlloted;
     double timeSpent;
     double timeRemaining;
-
+    int movesPlayed; // Moves played by our player
+    
     /**
      * Returns the best Move to play from the current game state for current player
      * hasMovedYet means in the calling history has the concerned player played a ring moving game

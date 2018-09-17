@@ -1295,21 +1295,24 @@ void Game::computePlayerNeg()
 int Game::selectRowLength(int curr, int prev, int dist){
 	if (curr>=numRingsForRow)
 		return numRingsForRow-1;
-	if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
-		return curr-1; 
-	return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
+
+	return curr-1;
+	// if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
+	// 	return curr-1; 
+	// return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
 	
 }
 
 double Game::computeMetric2(int player){
 	int chk = player;
 	int i, j, ctr, prev, dist;
-	int* rows = new int[numRingsForRow];
-	double coeffs[] = {0.3, 0.4, 0.6, 0.8, 1};
+	// int* rows = new int[numRingsForRow];
+	vector<int> rows(numRingsForRow, 0);
+	double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
 	
-	for (i = 0; i <= numRingsForRow; i++){
-		rows[i] = 0;
-	}
+	// for (i = 0; i <= numRingsForRow; i++){
+	// 	rows[i] = 0;
+	// }
 	
 	for (i = 0; i < boardSize; i++)
 	{
@@ -1318,7 +1321,7 @@ double Game::computeMetric2(int player){
 		dist = -1;
 		for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
 		{
-			if (board[i][j] == chk)
+			if (board[i][j] == chk || board[i][j] == 2*chk)
 				ctr++;
 			else {
 				if (ctr > 0){
@@ -1342,7 +1345,7 @@ double Game::computeMetric2(int player){
 		dist = -1;
 		for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
 		{
-			if (board[j][i] == chk)
+			if (board[j][i] == chk || board[j][i] == 2*chk)
 				ctr++;
 			else{
 				if (ctr > 0){
@@ -1370,7 +1373,7 @@ double Game::computeMetric2(int player){
 		it = xy_lims.at(i).first - boardSize + i + 1;
 		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
 		{
-			if (board[it][j] == chk)
+			if (board[it][j] == chk || board[it][j] == 2*chk)
 				ctr++;
 			else{
 				if (ctr > 0){
@@ -1445,6 +1448,6 @@ double Game::getUtility()
 	// displayN();
 	// cout << "---------------------------" <<endl;        
 	double util = computeMetric2(playerAssgn)-computeMetric2(-1*playerAssgn);
-	return util+ 20 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
+	return util+ 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
 }

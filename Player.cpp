@@ -12,6 +12,7 @@ Player::Player(int playerType, int numRings, double totalTime, double currentTim
 {
     player = playerType;
     minimaxDepth = 3;
+    movesPlayed = 0;
 
     // Initialise the game instance
     game = new Game(numRings, playerType);
@@ -19,7 +20,7 @@ Player::Player(int playerType, int numRings, double totalTime, double currentTim
     // Set up timers
     startTime = currentTime;
     timeAlloted = totalTime - 1.5; // A one second safeguard
-    timeSpent = (time(NULL) - startTime); 
+    timeSpent = (time(NULL) - startTime);
     timeRemaining = timeAlloted - timeSpent;
 }
 
@@ -881,28 +882,40 @@ void Player::playGame()
     }
 }
 
-void Player::updateGameStrategy(double beginTime) {
+void Player::updateGameStrategy(double beginTime)
+{
     // Update the timers
     timeSpent += time(NULL) - beginTime;
     timeRemaining = timeAlloted - timeSpent;
+    movesPlayed++;
 
-    // if (game->getGameState() == 1) {
-    //     // In ring placing stage => Play low depth
-    //     minimaxDepth = 2;
-    // } else if 
-    if (timeSpent < 5) {
-        // In initial stages => play fast
+    if (game->getGameState() == 1)
+    {
+        // In ring placing stage => Play low depth
+        minimaxDepth = 2;
+        // } else if (timeSpent < 5) {
+        //     // In initial stages => play fast
+        //     minimaxDepth = 3;
+    }
+    else if (movesPlayed < 30)
+    {
         minimaxDepth = 3;
-    } else if (timeRemaining > 40) {
+    }
+    else if (timeRemaining > 25)
+    {
         // In crucial game play => play thoughtfully
         minimaxDepth = 4;
-    } else if (timeRemaining > 2) {
+    }
+    else if (timeRemaining > 2)
+    {
         // Pace up
         minimaxDepth = 3;
-    } else {
+    }
+    else
+    {
         // Time is money
         minimaxDepth = 2;
     }
 
-    cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << endl;
+    cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << " | movesPlayed: " << movesPlayed << endl;
 }
