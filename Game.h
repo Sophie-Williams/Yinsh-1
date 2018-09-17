@@ -291,6 +291,7 @@ class Game
      * Called each time when minimax is cut-off
      */
     double getUtility(); // @Soumya
+	double getRingUtility();
 };
 
 #endif // GAME_H

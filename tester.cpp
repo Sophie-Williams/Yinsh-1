@@ -97,6 +97,7 @@ void testMakeMove()
         // game.displayHexagonalBoard();
         // cout << "Player " <<  (game.getPlayerToMove()*-1) << " played: " << move.cartesianToPolarString(game.getBoardSize()) << endl;
 		cout << "\t\t\t\t\t\t\t\t\t" << game.getUtility() << endl;
+		cout << "\t\t\t\t\t\t" << game.getRingUtility() << endl;
         // game.getPlayerToMove() *= -1; // flip turn
         // cout << "Player " << game.getPlayerToMove() << "'s turn: ";
         // usleep(1500000);
