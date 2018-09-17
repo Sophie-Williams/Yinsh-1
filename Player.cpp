@@ -166,17 +166,17 @@ bestAction Player::minValue(int depth, bool hasMovedYet)
 */
 bestAction Player::maxValue(int depth, bool hasMoved, double alpha, double beta)
 {
+    int currentState = game->getGameState();
+
     // Compute the best move to play
     if (depth <= 0 || game->isTerminalState())
     {
         // Cut off the minimax search
-        double utility = game->getUtility();
-        // double utility = 0.0;
+        double utility = (currentState == 1) ? game->getRingUtility() : game->getUtility();
+        // double utility = game->getUtility();
         // double utility = ((float) RAND_MAX); // CHANGE THIS LATER!!!!!!!!
         return make_pair(utility, Move());
     }
-
-    int currentState = game->getGameState();
 
     switch (currentState)
     {
@@ -199,17 +199,20 @@ bestAction Player::maxValue(int depth, bool hasMoved, double alpha, double beta)
 
 bestAction Player::minValue(int depth, bool hasMoved, double alpha, double beta)
 {
+    int currentState = game->getGameState();
+    
     // Compute the best move to play
     if (depth <= 0 || game->isTerminalState())
     {
         // Cut off the minimax search
-        double utility = game->getUtility();
+        // double utility = game->getUtility();
+        double utility = (currentState == 1) ? game->getRingUtility() : game->getUtility();
+
         // double utility = 0.0;
         // double utility = rand() / ((float) RAND_MAX); // Change it later!!!
         return make_pair(utility, Move());
     }
 
-    int currentState = game->getGameState();
 
     switch (currentState)
     {
@@ -897,7 +900,7 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
-    else if (movesPlayed < 30)
+    else if (movesPlayed < 12)
     {
         minimaxDepth = 3;
     }

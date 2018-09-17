@@ -807,8 +807,12 @@ vector<MicroMove> Game::getAllSelectMoveMoves(int player, bool sortOrder)
 	// return possibleMoves;
 }
 
-bool compareMicroMoveUtility(pair<double, MicroMove> P1, pair<double, MicroMove> P2) {
+bool compareMicroMoveUtilityLesser(pair<double, MicroMove> P1, pair<double, MicroMove> P2) {
 	return P1.first < P2.first;
+}
+
+bool compareMicroMoveUtilityGreater(pair<double, MicroMove> P1, pair<double, MicroMove> P2) {
+	return P1.first > P2.first;
 }
 
 vector<MicroMove> Game::sortMoves(vector<MicroMove> moves, bool sortOrder)
@@ -823,12 +827,12 @@ vector<MicroMove> Game::sortMoves(vector<MicroMove> moves, bool sortOrder)
 	if (sortOrder)
 	{
 		// Sort in ascending order
-		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtility);
+		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtilityLesser);
 	}
 	else
 	{
 		// Sort in Descending order
-		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtility);
+		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtilityGreater);
 	}
 
 	vector<MicroMove> sortedMoves;
