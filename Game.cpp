@@ -1295,11 +1295,9 @@ void Game::computePlayerNeg()
 int Game::selectRowLength(int curr, int prev, int dist){
 	if (curr>=numRingsForRow)
 		return numRingsForRow-1;
-
-	return curr-1;
-	// if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
-	// 	return curr-1; 
-	// return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
+	if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
+		return curr-1; 
+	return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
 	
 }
 
@@ -1329,6 +1327,9 @@ double Game::computeMetric2(int player){
 					dist = 0;
 					prev = ctr;
 				}
+				if (board[i][j] == -2*chk){
+					prev = -1;
+				}
 				dist++;
 				ctr = 0;
 			}
@@ -1352,6 +1353,9 @@ double Game::computeMetric2(int player){
 					rows[selectRowLength(ctr, prev, dist)] += 1;
 					dist = 0;
 					prev = ctr;
+				}
+				if (board[j][i] == -2*chk){
+					prev = -1;
 				}
 				dist++;
 				ctr = 0;	
@@ -1380,6 +1384,9 @@ double Game::computeMetric2(int player){
 					rows[selectRowLength(ctr, prev, dist)] += 1;
 					dist = 0;
 					prev = ctr;
+				}
+				if (board[it][j] == -2*chk){
+					prev = -1;
 				}
 				dist++;
 				ctr = 0;
@@ -1412,15 +1419,15 @@ double Game::computeMetric()
 			}
 			else if (board[i][j] == 0)
 			{
-				metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.05 * nrows[i][j];
+				metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.1 * nrows[i][j];
 			}
 			else if (board[i][j] == 2 * playerAssgn)
 			{
-				metric += 0.7 * nrows[i][j];
+				metric += 0.5 * nrows[i][j];
 			}
 			else if (board[i][j] == -2 * playerAssgn)
 			{
-				metric -= 0.7 * nrows[i][j];
+				metric -= 0.5 * nrows[i][j];
 			}
 			else if (board[i][j] == 1)
 			{
@@ -1441,8 +1448,6 @@ double Game::getUtility()
 {
 	// Return the utility of the current state
 	// Utility of win state should be highest and of lose state should be minimum
-	// computePlayerPos();
-	// computePlayerNeg();
 	// displayP();
 	// cout << "---------------------------" <<endl;
 	// displayN();
@@ -1450,4 +1455,10 @@ double Game::getUtility()
 	double util = computeMetric2(playerAssgn)-computeMetric2(-1*playerAssgn);
 	return util+ 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
+}
+
+double Game::getRingUtility(){
+	computePlayerPos();
+	computePlayerNeg();
+	return computeMetric();
 }
