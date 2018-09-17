@@ -105,29 +105,43 @@ class Game
 
     /**
      * Return all the moves that the `playerToMove` can play from the given state 
+     * sortOrder true for increasing sequence of utilities
      */
-    vector<MicroMove> getAllMoves();
+    vector<MicroMove> getAllMoves(bool sortOrder);
 
     /**
      * Returns all possible moves to place a ring on the board
      */
-    vector<MicroMove> getAllPlaceRingMoves(int player);
+    vector<MicroMove> getAllPlaceRingMoves(int player, bool sortOrder);
 
     /**
      * Returns all possible moves to select and move a possible ring
      */
-    vector<MicroMove> getAllSelectMoveMoves(int player);
+    vector<MicroMove> getAllSelectMoveMoves(int player, bool sortOrder);
 
     /**
      * Returns all possible moves to remove a contiguous row
      */
-    vector<MicroMove> getAllRemoveRowMoves(int player);
+    vector<MicroMove> getAllRemoveRowMoves(int player, bool sortOrder);
 
     /**
      * Returns all possible moves to remove a ring
      */
-    vector<MicroMove> getAllRemoveRingMoves(int player);
+    vector<MicroMove> getAllRemoveRingMoves(int player, bool sortOrder);
 
+    /**
+     * Returns the given moves in sorted order of utility
+     * sortOrder = true sorts in increasing order
+     */
+    vector<MicroMove> sortMoves(vector<MicroMove> moves, bool sortOrder);
+    
+    /**
+     * Applies given move to board
+     * computes the utility
+     * unmake the move and returns the utility
+     */
+    double getMicroMoveUtility (MicroMove move);
+    
     /**
      * Returns all positions where the given ring can be moved to in a given direction[0-5] (Aniclokwise from top)
      */

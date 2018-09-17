@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Utility.h"
 #include <assert.h>
+#include <algorithm>
 using namespace std;
 
 /** Utility Function */
@@ -693,7 +694,7 @@ pair<int, int> Game::nextPosition(pair<int, int> position, pair<int, bool> trave
 	}
 }
 
-vector<MicroMove> Game::getAllMoves()
+vector<MicroMove> Game::getAllMoves(bool sortOrder)
 {
 	// Gets all the possible moves from the current state
 	int stateOfGame = (playerToMove > 0) ? gameStatePos : gameStateNeg;
@@ -701,16 +702,16 @@ vector<MicroMove> Game::getAllMoves()
 	{
 	case 1:
 		// Have to place ring
-		return getAllPlaceRingMoves(playerToMove);
+		return getAllPlaceRingMoves(playerToMove, sortOrder);
 	case 2:
 		// Have to select and move a ring
-		return getAllSelectMoveMoves(playerToMove);
+		return getAllSelectMoveMoves(playerToMove, sortOrder);
 	case 3:
 		// Have to remove a row
-		return getAllRemoveRowMoves(playerToMove);
+		return getAllRemoveRowMoves(playerToMove, sortOrder);
 	case 4:
 		// Remove a ring
-		return getAllRemoveRingMoves(playerToMove);
+		return getAllRemoveRingMoves(playerToMove, sortOrder);
 	default:
 		// Return empty
 		cerr << "Game state invalid in Game::getAllMoves()\n";
@@ -718,7 +719,7 @@ vector<MicroMove> Game::getAllMoves()
 	}
 }
 
-vector<MicroMove> Game::getAllPlaceRingMoves(int player)
+vector<MicroMove> Game::getAllPlaceRingMoves(int player, bool sortOrder)
 {
 	// Iterate the board to find an empty position => Make a move out of it
 	vector<MicroMove> possibleMoves;
@@ -738,10 +739,11 @@ vector<MicroMove> Game::getAllPlaceRingMoves(int player)
 		}
 	}
 
-	return possibleMoves;
+	return sortMoves(possibleMoves, sortOrder);
+	// return possibleMoves;
 }
 
-vector<MicroMove> Game::getAllRemoveRingMoves(int player)
+vector<MicroMove> Game::getAllRemoveRingMoves(int player, bool sortOrder)
 {
 	// Iterate through the players rings and return corresponding remove moves
 	vector<MicroMove> possibleMoves;
@@ -755,10 +757,11 @@ vector<MicroMove> Game::getAllRemoveRingMoves(int player)
 		possibleMoves.push_back(move);
 	}
 
-	return possibleMoves;
+	return sortMoves(possibleMoves, sortOrder);
+	// return possibleMoves;
 }
 
-vector<MicroMove> Game::getAllRemoveRowMoves(int player)
+vector<MicroMove> Game::getAllRemoveRowMoves(int player, bool sortOrder)
 {
 	// Find all contiguous rows and transform them into corresponding move to remove
 	contiguousMarkers markersArr = getAllContiguousMarkers(player);
@@ -773,10 +776,11 @@ vector<MicroMove> Game::getAllRemoveRowMoves(int player)
 		possibleMoves.push_back(move);
 	}
 
-	return possibleMoves;
+	return sortMoves(possibleMoves, sortOrder);
+	// return possibleMoves;
 }
 
-vector<MicroMove> Game::getAllSelectMoveMoves(int player)
+vector<MicroMove> Game::getAllSelectMoveMoves(int player, bool sortOrder)
 {
 	// Select a ring and find all possible destinations
 	vector<MicroMove> possibleMoves;
@@ -799,8 +803,58 @@ vector<MicroMove> Game::getAllSelectMoveMoves(int player)
 			}
 		}
 	}
+	return sortMoves(possibleMoves, sortOrder);
+	// return possibleMoves;
+}
 
-	return possibleMoves;
+bool compareMicroMoveUtility(pair<double, MicroMove> P1, pair<double, MicroMove> P2) {
+	return P1.first < P2.first;
+}
+
+vector<MicroMove> Game::sortMoves(vector<MicroMove> moves, bool sortOrder)
+{
+	// Sorts the moves in order of their utility
+	vector<pair<double, MicroMove>> utilMoves;
+	for (auto mv = moves.begin(); mv != moves.end(); mv++)
+	{
+		utilMoves.push_back(make_pair(getMicroMoveUtility(*mv), *mv));
+	}
+
+	if (sortOrder)
+	{
+		// Sort in ascending order
+		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtility);
+	}
+	else
+	{
+		// Sort in Descending order
+		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtility);
+	}
+
+	vector<MicroMove> sortedMoves;
+	for (auto mv = utilMoves.begin(); mv != utilMoves.end(); mv++)
+	{
+		sortedMoves.push_back((*mv).second);
+	}
+
+	return sortedMoves;
+}
+
+double Game::getMicroMoveUtility(MicroMove move)
+{
+	// Make the move
+	bool status = makeMicroMove(move);
+	if (!status)
+		cerr << "Unable to makeMove in Game::getMicroMoveUtility" << endl;
+
+	double utility = getUtility();
+
+	// Unmake the move
+	status = unmakeMicroMove(move);
+	if (!status)
+		cerr << "Unable to unmakeMove in Game::getMicroMoveUtility" << endl;
+
+	return utility;
 }
 
 vector<pair<int, int>> Game::getAllPossibleDestinationsInDirection(pair<int, int> ringPos, int direc)
@@ -1120,7 +1174,6 @@ void Game::displayN()
 	}
 }
 
-
 int Game::getOverlaps(int l, int r, int pt)
 {
 	int truel = l > pt - numRingsForRow + 1 ? l : pt - numRingsForRow + 1;
@@ -1292,28 +1345,29 @@ void Game::computePlayerNeg()
 	}
 }
 
-int Game::selectRowLength(int curr, int prev, int dist){
-	if (curr>=numRingsForRow)
-		return numRingsForRow-1;
+int Game::selectRowLength(int curr, int prev, int dist)
+{
+	if (curr >= numRingsForRow)
+		return numRingsForRow - 1;
 
-	return curr-1;
+	return curr - 1;
 	// if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
-	// 	return curr-1; 
+	// 	return curr-1;
 	// return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
-	
 }
 
-double Game::computeMetric2(int player){
+double Game::computeMetric2(int player)
+{
 	int chk = player;
 	int i, j, ctr, prev, dist;
 	// int* rows = new int[numRingsForRow];
 	vector<int> rows(numRingsForRow, 0);
 	double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
-	
+
 	// for (i = 0; i <= numRingsForRow; i++){
 	// 	rows[i] = 0;
 	// }
-	
+
 	for (i = 0; i < boardSize; i++)
 	{
 		ctr = 0;
@@ -1321,10 +1375,12 @@ double Game::computeMetric2(int player){
 		dist = -1;
 		for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
 		{
-			if (board[i][j] == chk || board[i][j] == 2*chk)
+			if (board[i][j] == chk || board[i][j] == 2 * chk)
 				ctr++;
-			else {
-				if (ctr > 0){
+			else
+			{
+				if (ctr > 0)
+				{
 					rows[selectRowLength(ctr, prev, dist)] += 1;
 					dist = 0;
 					prev = ctr;
@@ -1333,7 +1389,8 @@ double Game::computeMetric2(int player){
 				ctr = 0;
 			}
 		}
-		if (ctr > 0){
+		if (ctr > 0)
+		{
 			rows[selectRowLength(ctr, prev, dist)] += 1;
 		}
 	}
@@ -1345,19 +1402,22 @@ double Game::computeMetric2(int player){
 		dist = -1;
 		for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
 		{
-			if (board[j][i] == chk || board[j][i] == 2*chk)
+			if (board[j][i] == chk || board[j][i] == 2 * chk)
 				ctr++;
-			else{
-				if (ctr > 0){
+			else
+			{
+				if (ctr > 0)
+				{
 					rows[selectRowLength(ctr, prev, dist)] += 1;
 					dist = 0;
 					prev = ctr;
 				}
 				dist++;
-				ctr = 0;	
+				ctr = 0;
 			}
 		}
-		if (ctr > 0){
+		if (ctr > 0)
+		{
 			rows[selectRowLength(ctr, prev, dist)] += 1;
 		}
 	}
@@ -1373,10 +1433,12 @@ double Game::computeMetric2(int player){
 		it = xy_lims.at(i).first - boardSize + i + 1;
 		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
 		{
-			if (board[it][j] == chk || board[it][j] == 2*chk)
+			if (board[it][j] == chk || board[it][j] == 2 * chk)
 				ctr++;
-			else{
-				if (ctr > 0){
+			else
+			{
+				if (ctr > 0)
+				{
 					rows[selectRowLength(ctr, prev, dist)] += 1;
 					dist = 0;
 					prev = ctr;
@@ -1385,16 +1447,17 @@ double Game::computeMetric2(int player){
 				ctr = 0;
 			}
 		}
-		if (ctr > 0){
+		if (ctr > 0)
+		{
 			rows[selectRowLength(ctr, prev, dist)] += 1;
 		}
 	}
-	
-	
+
 	double metric = 0.0;
-	for (i = 0; i<numRingsForRow; i++){
+	for (i = 0; i < numRingsForRow; i++)
+	{
 		// cout << rows[i] << " ";
-		metric += (rows[i]*coeffs[i]);
+		metric += (rows[i] * coeffs[i]);
 	}
 	return metric;
 }
@@ -1446,8 +1509,8 @@ double Game::getUtility()
 	// displayP();
 	// cout << "---------------------------" <<endl;
 	// displayN();
-	// cout << "---------------------------" <<endl;        
-	double util = computeMetric2(playerAssgn)-computeMetric2(-1*playerAssgn);
-	return util+ 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
+	// cout << "---------------------------" <<endl;
+	double util = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
+	return util + 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
 }

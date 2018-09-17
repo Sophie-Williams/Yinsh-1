@@ -232,7 +232,7 @@ bestAction Player::maxValuePlaceRing(int depth, bool hasMoved, double alpha, dou
 {
     // cerr << "In Player::maxValuePlaceRing\n";
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(false);
 
     // verify moves
     // for (auto microMv = moves.begin(); microMv != moves.end(); microMv++) {
@@ -303,7 +303,7 @@ bestAction Player::maxValuePlaceRing(int depth, bool hasMoved, double alpha, dou
 bestAction Player::maxValueMoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(false);
 
     // verify moves
     // for (auto microMv = moves.begin(); microMv != moves.end(); microMv++) {
@@ -395,7 +395,7 @@ bestAction Player::maxValueMoveRing(int depth, bool hasMoved, double alpha, doub
 bestAction Player::maxValueRemoveRow(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(false);
 
     // Maintain a maximun
     bestAction maxAction = make_pair(-INF, Move());
@@ -454,7 +454,7 @@ bestAction Player::maxValueRemoveRow(int depth, bool hasMoved, double alpha, dou
 bestAction Player::maxValueRemoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(false);
 
     // Maintain a maximun
     bestAction maxAction = make_pair(-INF, Move());
@@ -540,7 +540,7 @@ bestAction Player::maxValueRemoveRing(int depth, bool hasMoved, double alpha, do
 bestAction Player::minValuePlaceRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(true);
 
     // Maintain a maximun
     bestAction minAction = make_pair(INF, Move());
@@ -604,7 +604,7 @@ bestAction Player::minValuePlaceRing(int depth, bool hasMoved, double alpha, dou
 bestAction Player::minValueMoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(true);
 
     // Maintain a maximun
     bestAction minAction = make_pair(INF, Move());
@@ -688,7 +688,7 @@ bestAction Player::minValueMoveRing(int depth, bool hasMoved, double alpha, doub
 bestAction Player::minValueRemoveRow(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(true);
 
     // Maintain a maximun
     bestAction minAction = make_pair(INF, Move());
@@ -746,7 +746,7 @@ bestAction Player::minValueRemoveRow(int depth, bool hasMoved, double alpha, dou
 bestAction Player::minValueRemoveRing(int depth, bool hasMoved, double alpha, double beta)
 {
     // Commpute best move to place ring
-    vector<MicroMove> moves = game->getAllMoves();
+    vector<MicroMove> moves = game->getAllMoves(true);
 
     // Maintain a maximun
     bestAction minAction = make_pair(INF, Move());
