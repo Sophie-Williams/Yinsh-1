@@ -1,8 +1,11 @@
 all: main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp
-	  g++ --std=c++11 -o dSwnUAB main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
+	  g++ --std=c++11 -O3 -o main main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
 
 clean: 
 	del -f *.exe
+
+opti: main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp
+	  g++ --std=c++11 -O3 -o dSwnnUeAB main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
 
 debug: main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp
 	  g++ --std=c++11 -g -o debug main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 

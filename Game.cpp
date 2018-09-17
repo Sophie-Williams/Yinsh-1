@@ -267,7 +267,7 @@ void Game::updateGameState(int player)
  *  FOR ERRORS WHICH CAN'T BE IGNORED FOR SAFE EXIT OF PROGRAM, I RETURN false
  */
 /* playerToMove flipping is managed by ME now */
-bool Game::makeMove(Move move)
+bool Game::makeMove(const Move &move)
 {
 	// Make all the constituent micromove
 	bool status = true;
@@ -384,7 +384,7 @@ bool Game::unmakeMove(Move move)
 
 */
 
-bool Game::makeMicroMove(MicroMove move)
+bool Game::makeMicroMove(const MicroMove &move)
 {
 	switch (move.type)
 	{
@@ -412,7 +412,7 @@ bool Game::makeMicroMove(MicroMove move)
 }
 
 /** Play the converse of the move */
-bool Game::unmakeMicroMove(MicroMove move)
+bool Game::unmakeMicroMove(const MicroMove &move)
 {
 	switch (move.type)
 	{
@@ -439,7 +439,7 @@ bool Game::unmakeMicroMove(MicroMove move)
 	}
 }
 
-bool Game::placeRing(pair<int, int> ringPos)
+bool Game::placeRing(const pair<int, int> &ringPos)
 {
 	// Place the ring at the position
 	if (playerToMove > 0)
@@ -457,7 +457,7 @@ bool Game::placeRing(pair<int, int> ringPos)
 	return true; // done
 }
 
-bool Game::removeRing(pair<int, int> ringPos)
+bool Game::removeRing(const pair<int, int> &ringPos)
 {
 	if (playerToMove > 0) // positive player's turn
 	{
@@ -482,7 +482,7 @@ bool Game::removeRing(pair<int, int> ringPos)
 	return true;
 }
 
-bool Game::moveRing(pair<int, int> initialPos, pair<int, int> finalPos, bool isForwardMove)
+bool Game::moveRing(const pair<int, int> &initialPos, const pair<int, int> &finalPos, bool isForwardMove)
 {
 	if (playerToMove > 0) // positive player's turn
 	{
@@ -524,7 +524,7 @@ bool Game::moveRing(pair<int, int> initialPos, pair<int, int> finalPos, bool isF
 	}
 }
 
-int Game::lookupRing(pair<int, int> position, int player)
+int Game::lookupRing(const pair<int, int> &position, int player)
 {
 	if (player > 0)
 	{
@@ -560,7 +560,7 @@ int Game::lookupRing(pair<int, int> position, int player)
 	}
 }
 
-bool Game::flipMarkers(pair<int, int> startPoint, pair<int, int> endPoint)
+bool Game::flipMarkers(const pair<int, int> &startPoint, const pair<int, int> &endPoint)
 {
 	pair<int, bool> traversalOrder = determineOrderTraversal(startPoint, endPoint);
 	if (traversalOrder.first < 0 || traversalOrder.first >= 3)
@@ -582,7 +582,7 @@ bool Game::flipMarkers(pair<int, int> startPoint, pair<int, int> endPoint)
 	return true;
 }
 
-bool Game::removeMarkers(pair<int, int> startPoint, pair<int, int> endPoint)
+bool Game::removeMarkers(const pair<int, int> &startPoint, const pair<int, int> &endPoint)
 {
 	pair<int, bool> traversalOrder = determineOrderTraversal(startPoint, endPoint);
 	if (traversalOrder.first < 0 || traversalOrder.first >= 3)
@@ -612,7 +612,7 @@ bool Game::removeMarkers(pair<int, int> startPoint, pair<int, int> endPoint)
 	return true;
 }
 
-bool Game::populateMarkers(pair<int, int> startPoint, pair<int, int> endPoint, int player)
+bool Game::populateMarkers(const pair<int, int> &startPoint, const pair<int, int> &endPoint, int player)
 {
 	pair<int, bool> traversalOrder = determineOrderTraversal(startPoint, endPoint);
 	if (traversalOrder.first < 0 || traversalOrder.first >= 3)
@@ -645,7 +645,7 @@ bool Game::populateMarkers(pair<int, int> startPoint, pair<int, int> endPoint, i
 	return true;
 }
 
-pair<int, bool> Game::determineOrderTraversal(pair<int, int> startPoint, pair<int, int> endPoint)
+pair<int, bool> Game::determineOrderTraversal(const pair<int, int> &startPoint, const pair<int, int> &endPoint)
 {
 	if (startPoint.second == endPoint.second)
 	{
@@ -669,7 +669,7 @@ pair<int, bool> Game::determineOrderTraversal(pair<int, int> startPoint, pair<in
 	}
 }
 
-pair<int, int> Game::nextPosition(pair<int, int> position, pair<int, bool> traversalOrder)
+pair<int, int> Game::nextPosition(const pair<int, int> &position, const pair<int, bool> &traversalOrder)
 {
 	switch (traversalOrder.first)
 	{
@@ -807,15 +807,17 @@ vector<MicroMove> Game::getAllSelectMoveMoves(int player, bool sortOrder)
 	// return possibleMoves;
 }
 
-bool compareMicroMoveUtilityLesser(pair<double, MicroMove> P1, pair<double, MicroMove> P2) {
+bool compareMicroMoveUtilityLesser(const pair<double, MicroMove> &P1, const pair<double, MicroMove> &P2)
+{
 	return P1.first < P2.first;
 }
 
-bool compareMicroMoveUtilityGreater(pair<double, MicroMove> P1, pair<double, MicroMove> P2) {
+bool compareMicroMoveUtilityGreater(const pair<double, MicroMove> &P1, const pair<double, MicroMove> &P2)
+{
 	return P1.first > P2.first;
 }
 
-vector<MicroMove> Game::sortMoves(vector<MicroMove> moves, bool sortOrder)
+vector<MicroMove> Game::sortMoves(const vector<MicroMove> &moves, bool sortOrder)
 {
 	// Sorts the moves in order of their utility
 	vector<pair<double, MicroMove>> utilMoves;
@@ -844,7 +846,7 @@ vector<MicroMove> Game::sortMoves(vector<MicroMove> moves, bool sortOrder)
 	return sortedMoves;
 }
 
-double Game::getMicroMoveUtility(MicroMove move)
+double Game::getMicroMoveUtility(const MicroMove &move)
 {
 	// Make the move
 	bool status = makeMicroMove(move);
@@ -1349,13 +1351,13 @@ void Game::computePlayerNeg()
 	}
 }
 
-int Game::selectRowLength(int curr, int prev, int dist){
-	if (curr>=numRingsForRow)
-		return numRingsForRow-1;
+int Game::selectRowLength(int curr, int prev, int dist)
+{
+	if (curr >= numRingsForRow)
+		return numRingsForRow - 1;
 	if (prev == -1 || dist == -1 || curr + dist >= numRingsForRow)
-		return curr-1; 
-	return curr - 1 + (numRingsForRow-curr-dist > prev ? prev: numRingsForRow-curr-dist);
-	
+		return curr - 1;
+	return curr - 1 + (numRingsForRow - curr - dist > prev ? prev : numRingsForRow - curr - dist);
 }
 
 double Game::computeMetric2(int player)
@@ -1387,7 +1389,8 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[i][j] == -2*chk){
+				if (board[i][j] == -2 * chk)
+				{
 					prev = -1;
 				}
 				dist++;
@@ -1417,7 +1420,8 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[j][i] == -2*chk){
+				if (board[j][i] == -2 * chk)
+				{
 					prev = -1;
 				}
 				dist++;
@@ -1451,7 +1455,8 @@ double Game::computeMetric2(int player)
 					dist = 0;
 					prev = ctr;
 				}
-				if (board[it][j] == -2*chk){
+				if (board[it][j] == -2 * chk)
+				{
 					prev = -1;
 				}
 				dist++;
@@ -1524,7 +1529,8 @@ double Game::getUtility()
 	// return 0.0;
 }
 
-double Game::getRingUtility(){
+double Game::getRingUtility()
+{
 	computePlayerPos();
 	computePlayerNeg();
 	return computeMetric();

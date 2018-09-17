@@ -22,7 +22,7 @@ class Move
      */
     Move();
 
-    vector<MicroMove> getMoveSeq() {
+    vector<MicroMove> getMoveSeq() const {
       return moveSeq;
     }
 

@@ -200,7 +200,7 @@ bestAction Player::maxValue(int depth, bool hasMoved, double alpha, double beta)
 bestAction Player::minValue(int depth, bool hasMoved, double alpha, double beta)
 {
     int currentState = game->getGameState();
-    
+
     // Compute the best move to play
     if (depth <= 0 || game->isTerminalState())
     {
@@ -900,11 +900,11 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
-    else if (movesPlayed < 12)
+    else if (movesPlayed < 22)
     {
         minimaxDepth = 3;
     }
-    else if (timeRemaining > 25)
+    else if (timeRemaining > 40)
     {
         // In crucial game play => play thoughtfully
         minimaxDepth = 4;
