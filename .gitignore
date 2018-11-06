@@ -47,4 +47,10 @@ debug
 
 # Custom
 .vscode/
+venv/
+js/
+templates/
+*.html
+*.log
+*.pyc
 

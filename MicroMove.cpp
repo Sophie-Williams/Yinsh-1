@@ -10,7 +10,7 @@ MicroMove::MicroMove(char type, vector<pair<int, int>> moveInfo)
     this->moveInfo = moveInfo;
 }
 
-string MicroMove::cartesianToPolarString(int boardSize)
+string MicroMove::cartesianToPolarString (int boardSize) const
 {
     Utility util;
 

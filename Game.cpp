@@ -851,14 +851,14 @@ double Game::getMicroMoveUtility(const MicroMove &move)
 	// Make the move
 	bool status = makeMicroMove(move);
 	if (!status)
-		cerr << "Unable to makeMove in Game::getMicroMoveUtility" << endl;
+		cerr << "Unable to makeMove in Game::getMicroMoveUtility" << move.cartesianToPolarString(boardSize) << endl;
 
 	double utility = getUtility();
 
 	// Unmake the move
 	status = unmakeMicroMove(move);
 	if (!status)
-		cerr << "Unable to unmakeMove in Game::getMicroMoveUtility" << endl;
+		cerr << "Unable to unmakeMove in Game::getMicroMoveUtility" << move.cartesianToPolarString(boardSize) << endl;
 
 	return utility;
 }
@@ -992,6 +992,25 @@ contiguousMarkers Game::getOneRow(int i, int j, int ctr, int mode)
 	}
 
 	return oneRow;
+}
+
+double Game::computeRingUtility() {
+	// Calculates Ring Placement Utility from the perspective of playerType i.e. current player
+	// Is intended to be used at depth 1 only
+
+	int possibleMoves = 0;
+	vector<pair<int, int>> rings = (playerAssgn > 0) ? ringsPositive : ringsNegative;
+	for (auto ring = rings.begin(); ring != rings.end(); ring++)
+	{
+		// Iterate in all directions and get possible directions
+		for (int direc = 0; direc < 6; direc++)
+		{
+			vector<pair<int, int>> destinations = getAllPossibleDestinationsInDirection(*ring, direc);
+			possibleMoves += destinations.size();
+		}
+	}
+
+	return possibleMoves * 5;
 }
 
 contiguousMarkers Game::getAllContiguousMarkers(int player)
@@ -1366,7 +1385,9 @@ double Game::computeMetric2(int player)
 	int i, j, ctr, prev, dist;
 	// int* rows = new int[numRingsForRow];
 	vector<double> rows(numRingsForRow, 0.0);
-	double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
+	// double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
+	// double coeffs[] = {0.3, 0.9, 2.7, 8.1, 24.3};
+	double coeffs[] = {0.5, 5, 50, 250, 1250};
 
 	// for (i = 0; i <= numRingsForRow; i++){
 	// 	rows[i] = 0;
@@ -1530,9 +1551,10 @@ double Game::getUtility()
 	// cout << "---------------------------" <<endl;
 	// displayN();
 	// cout << "---------------------------" <<endl;
+	double ringWt = 10000;
 	double util1 = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
 	double util2 = getRingUtility();
-	return util1 + 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
+	return util1 + ringWt * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
 }
 

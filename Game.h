@@ -236,6 +236,12 @@ class Game
      */
     bool isTerminalState();
 	
+  /**
+   * Utility of the given state, according to number of possible places the ring could go
+   */
+  double computeRingUtility();
+
+
 	/**
      * Returns an array of all continous streak of markers of player
      */

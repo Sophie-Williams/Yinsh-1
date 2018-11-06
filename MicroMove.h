@@ -41,7 +41,7 @@ class MicroMove
     /**
      * Returns the polar representation of the micro-move in the form of a string
      */
-    string cartesianToPolarString(int boardSize);
+    string cartesianToPolarString (int boardSize) const;
 };
 
 #endif // MICRO_MOVE_H
