@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <stdlib.h>
 #include "Move.h"
 #include "MicroMove.h"
 using namespace std;
@@ -13,7 +14,7 @@ using namespace std;
 
 class Game
 {
-  private: // for testing purposes => please make private
+  public: // for testing purposes => please make private
     // Game parameters
     int numRings;
     int boardSize;
@@ -43,7 +44,6 @@ class Game
 
     bool posRingsPlaced; // Have all rings been placed
     bool negRingsPlaced; // Have all rings been placed
-  public:
     /**
      * @constructor
      * Makes an empty board of given specification
@@ -51,7 +51,7 @@ class Game
      */
     // Game();
 	
-	  Game(int numberOfRings, int playerType);
+	Game(int numberOfRings, int playerType);
 
     /**
      * Returns the `playerToMove`
@@ -85,6 +85,7 @@ class Game
       }
     }
 
+	
     bool moreToPlace() {
       if (playerToMove > 0) {
         return (ringsPositive.size() < numRings);
@@ -166,7 +167,7 @@ class Game
     /**
      * Play the micro-move, and return success status
      */
-    bool makeMicroMove(const MicroMove &move);
+    bool makeMicroMove(const MicroMove &move, bool diag = false);
 
     /** 
      * Unplay the micro-move, and return success status
@@ -246,6 +247,8 @@ class Game
 	 * Displays current board state
 	 */
 	void displayBoard();
+	
+	string nninput();
 
   /**
    * Display the board in hexagonal format
@@ -291,6 +294,7 @@ class Game
      * Called each time when minimax is cut-off
      */
     double getUtility(); // @Soumya
+    double getRandUtility();
 	double getRingUtility();
 };
 

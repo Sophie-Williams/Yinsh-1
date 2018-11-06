@@ -43,13 +43,14 @@ Game::Game(int numberOfRings, int playerType)
 			}
 		}
 	}
+	delete allowed;
 
-	// Allocate a 2D matrix for possible rows
-	nrows = new int *[boardSize];
-	for (int i = 0; i < boardSize; i++)
-	{
-		nrows[i] = new int[boardSize];
-	}
+	// // Allocate a 2D matrix for possible rows
+	// nrows = new int *[boardSize];
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// nrows[i] = new int[boardSize];
+	// }
 
 	// filling up x_lims
 	int st, end;
@@ -124,45 +125,45 @@ Game::Game(int numberOfRings, int playerType)
 		xy_lims.push_back(make_pair(st, end));
 	}
 
-	//Initialise nrows
-	for (int i = 0; i < boardSize; i++)
-	{
-		for (int j = 0; j < boardSize; j++)
-		{
-			if (board[i][j] == -7)
-			{
-				nrows[i][j] = -7;
-				continue;
-			}
-			nrows[i][j] = getOverlaps(x_lims.at(i).first, x_lims.at(i).second, j);
-			nrows[i][j] += getOverlaps(y_lims.at(j).first, y_lims.at(j).second, i);
-			nrows[i][j] += getOverlaps(xy_lims.at(i - j + boardSize - 1).first, xy_lims.at(i - j + boardSize - 1).second, j);
-		}
-	}
+	// //Initialise nrows
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// for (int j = 0; j < boardSize; j++)
+		// {
+			// if (board[i][j] == -7)
+			// {
+				// nrows[i][j] = -7;
+				// continue;
+			// }
+			// nrows[i][j] = getOverlaps(x_lims.at(i).first, x_lims.at(i).second, j);
+			// nrows[i][j] += getOverlaps(y_lims.at(j).first, y_lims.at(j).second, i);
+			// nrows[i][j] += getOverlaps(xy_lims.at(i - j + boardSize - 1).first, xy_lims.at(i - j + boardSize - 1).second, j);
+		// }
+	// }
 
-	// Allocate a board
-	playerPos = new int *[boardSize];
-	for (int i = 0; i < boardSize; i++)
-	{
-		playerPos[i] = new int[boardSize];
-	}
+	// // Allocate a board
+	// playerPos = new int *[boardSize];
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// playerPos[i] = new int[boardSize];
+	// }
 
-	// Allocate a board
-	playerNeg = new int *[boardSize];
-	for (int i = 0; i < boardSize; i++)
-	{
-		playerNeg[i] = new int[boardSize];
-	}
+	// // Allocate a board
+	// playerNeg = new int *[boardSize];
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// playerNeg[i] = new int[boardSize];
+	// }
 
 	// initialise playerPos and playerNeg
-	for (int i = 0; i < boardSize; i++)
-	{
-		for (int j = 0; j < boardSize; j++)
-		{
-			playerPos[i][j] = 0;
-			playerNeg[i][j] = 0;
-		}
-	}
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// for (int j = 0; j < boardSize; j++)
+		// {
+			// playerPos[i][j] = 0;
+			// playerNeg[i][j] = 0;
+		// }
+	// }
 	// Initialise the game state
 	playerAssgn = playerType;
 	playerToMove = 1; // Always player 0 moves first
@@ -384,8 +385,10 @@ bool Game::unmakeMove(Move move)
 
 */
 
-bool Game::makeMicroMove(const MicroMove &move)
+bool Game::makeMicroMove(const MicroMove &move, bool diag)
 {
+	if (diag)
+		cout << "mM "<<move.type<<" ";
 	switch (move.type)
 	{
 	case 'P':
@@ -739,7 +742,7 @@ vector<MicroMove> Game::getAllPlaceRingMoves(int player, bool sortOrder)
 		}
 	}
 
-	return sortMoves(possibleMoves, sortOrder);
+	return possibleMoves;
 	// return possibleMoves;
 }
 
@@ -757,7 +760,7 @@ vector<MicroMove> Game::getAllRemoveRingMoves(int player, bool sortOrder)
 		possibleMoves.push_back(move);
 	}
 
-	return sortMoves(possibleMoves, sortOrder);
+	return possibleMoves;
 	// return possibleMoves;
 }
 
@@ -776,8 +779,8 @@ vector<MicroMove> Game::getAllRemoveRowMoves(int player, bool sortOrder)
 		possibleMoves.push_back(move);
 	}
 
-	return sortMoves(possibleMoves, sortOrder);
-	// return possibleMoves;
+	// return sortMoves(possibleMoves, sortOrder);
+	return possibleMoves;
 }
 
 vector<MicroMove> Game::getAllSelectMoveMoves(int player, bool sortOrder)
@@ -803,7 +806,7 @@ vector<MicroMove> Game::getAllSelectMoveMoves(int player, bool sortOrder)
 			}
 		}
 	}
-	return sortMoves(possibleMoves, sortOrder);
+	return possibleMoves;
 	// return possibleMoves;
 }
 
@@ -817,51 +820,51 @@ bool compareMicroMoveUtilityGreater(const pair<double, MicroMove> &P1, const pai
 	return P1.first > P2.first;
 }
 
-vector<MicroMove> Game::sortMoves(const vector<MicroMove> &moves, bool sortOrder)
-{
-	// Sorts the moves in order of their utility
-	vector<pair<double, MicroMove>> utilMoves;
-	for (auto mv = moves.begin(); mv != moves.end(); mv++)
-	{
-		utilMoves.push_back(make_pair(getMicroMoveUtility(*mv), *mv));
-	}
+// vector<MicroMove> Game::sortMoves(const vector<MicroMove> &moves, bool sortOrder)
+// {
+	// // Sorts the moves in order of their utility
+	// vector<pair<double, MicroMove>> utilMoves;
+	// for (auto mv = moves.begin(); mv != moves.end(); mv++)
+	// {
+		// utilMoves.push_back(make_pair(getMicroMoveUtility(*mv), *mv));
+	// }
 
-	if (sortOrder)
-	{
-		// Sort in ascending order
-		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtilityLesser);
-	}
-	else
-	{
-		// Sort in Descending order
-		sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtilityGreater);
-	}
+	// if (sortOrder)
+	// {
+		// // Sort in ascending order
+		// sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtilityLesser);
+	// }
+	// else
+	// {
+		// // Sort in Descending order
+		// sort(utilMoves.begin(), utilMoves.end(), compareMicroMoveUtilityGreater);
+	// }
 
-	vector<MicroMove> sortedMoves;
-	for (auto mv = utilMoves.begin(); mv != utilMoves.end(); mv++)
-	{
-		sortedMoves.push_back((*mv).second);
-	}
+	// vector<MicroMove> sortedMoves;
+	// for (auto mv = utilMoves.begin(); mv != utilMoves.end(); mv++)
+	// {
+		// sortedMoves.push_back((*mv).second);
+	// }
 
-	return sortedMoves;
-}
+	// return sortedMoves;
+// }
 
-double Game::getMicroMoveUtility(const MicroMove &move)
-{
-	// Make the move
-	bool status = makeMicroMove(move);
-	if (!status)
-		cerr << "Unable to makeMove in Game::getMicroMoveUtility" << endl;
+// double Game::getMicroMoveUtility(const MicroMove &move)
+// {
+	// // Make the move
+	// bool status = makeMicroMove(move);
+	// if (!status)
+		// cerr << "Unable to makeMove in Game::getMicroMoveUtility" << endl;
 
-	double utility = getUtility();
+	// double utility = getUtility();
 
-	// Unmake the move
-	status = unmakeMicroMove(move);
-	if (!status)
-		cerr << "Unable to unmakeMove in Game::getMicroMoveUtility" << endl;
+	// // Unmake the move
+	// status = unmakeMicroMove(move);
+	// if (!status)
+		// cerr << "Unable to unmakeMove in Game::getMicroMoveUtility" << endl;
 
-	return utility;
-}
+	// return utility;
+// }
 
 vector<pair<int, int>> Game::getAllPossibleDestinationsInDirection(pair<int, int> ringPos, int direc)
 {
@@ -1132,17 +1135,17 @@ void Game::displayHexagonalBoard()
 	return;
 }
 
-void Game::displayNrows()
-{
-	for (int i = 0; i < boardSize; i++)
-	{
-		for (int j = 0; j < boardSize; j++)
-		{
-			cout << setw(2) << nrows[i][j] << " ";
-		}
-		cout << endl;
-	}
-}
+// void Game::displayNrows()
+// {
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// for (int j = 0; j < boardSize; j++)
+		// {
+			// cout << setw(2) << nrows[i][j] << " ";
+		// }
+		// cout << endl;
+	// }
+// }
 
 void Game::dispLims()
 {
@@ -1157,28 +1160,28 @@ void Game::dispLims()
 	cout << endl;
 }
 
-void Game::displayP()
-{
-	for (int i = 0; i < boardSize; i++)
-	{
-		for (int j = 0; j < boardSize; j++)
-		{
-			cout << setw(2) << playerPos[i][j] << " ";
-		}
-		cout << endl;
-	}
-}
-void Game::displayN()
-{
-	for (int i = 0; i < boardSize; i++)
-	{
-		for (int j = 0; j < boardSize; j++)
-		{
-			cout << setw(2) << playerNeg[i][j] << " ";
-		}
-		cout << endl;
-	}
-}
+// void Game::displayP()
+// {
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// for (int j = 0; j < boardSize; j++)
+		// {
+			// cout << setw(2) << playerPos[i][j] << " ";
+		// }
+		// cout << endl;
+	// }
+// }
+// void Game::displayN()
+// {
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// for (int j = 0; j < boardSize; j++)
+		// {
+			// cout << setw(2) << playerNeg[i][j] << " ";
+		// }
+		// cout << endl;
+	// }
+// }
 
 int Game::getOverlaps(int l, int r, int pt)
 {
@@ -1331,25 +1334,25 @@ void Game::addRing(int **player, int x, int y)
 	}
 }
 
-void Game::computePlayerPos()
-{
-	for (int i = 0; i < ringsPositive.size(); i++)
-	{
-		addRing(playerPos, ringsPositive.at(i).first, ringsPositive.at(i).second);
-		// displayP();
-		// cout << endl;
-	}
-}
+// void Game::computePlayerPos()
+// {
+	// for (int i = 0; i < ringsPositive.size(); i++)
+	// {
+		// addRing(playerPos, ringsPositive.at(i).first, ringsPositive.at(i).second);
+		// // displayP();
+		// // cout << endl;
+	// }
+// }
 
-void Game::computePlayerNeg()
-{
-	for (int i = 0; i < ringsNegative.size(); i++)
-	{
-		addRing(playerNeg, ringsNegative.at(i).first, ringsNegative.at(i).second);
-		// displayN();
-		// cout << endl;
-	}
-}
+// void Game::computePlayerNeg()
+// {
+	// for (int i = 0; i < ringsNegative.size(); i++)
+	// {
+		// addRing(playerNeg, ringsNegative.at(i).first, ringsNegative.at(i).second);
+		// // displayN();
+		// // cout << endl;
+	// }
+// }
 
 int Game::selectRowLength(int curr, int prev, int dist)
 {
@@ -1360,185 +1363,207 @@ int Game::selectRowLength(int curr, int prev, int dist)
 	return curr - 1 + (numRingsForRow - curr - dist > prev ? prev : numRingsForRow - curr - dist);
 }
 
-double Game::computeMetric2(int player)
-{
-	int chk = player;
-	int i, j, ctr, prev, dist;
-	// int* rows = new int[numRingsForRow];
-	vector<double> rows(numRingsForRow, 0.0);
-	double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
+// double Game::computeMetric2(int player)
+// {
+	// int chk = player;
+	// int i, j, ctr, prev, dist;
+	// // int* rows = new int[numRingsForRow];
+	// vector<double> rows(numRingsForRow, 0.0);
+	// double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
 
-	// for (i = 0; i <= numRingsForRow; i++){
-	// 	rows[i] = 0;
+	// // for (i = 0; i <= numRingsForRow; i++){
+	// // 	rows[i] = 0;
+	// // }
+
+	// for (i = 0; i < boardSize; i++)
+	// {
+		// ctr = 0;
+		// prev = -1;
+		// dist = -1;
+		// for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
+		// {
+			// if (board[i][j] == chk || board[i][j] == 2 * chk)
+				// ctr++;
+			// else
+			// {
+				// if (ctr > 0)
+				// {
+					// rows[selectRowLength(ctr, prev, dist)] += 1;
+					// dist = 0;
+					// prev = ctr;
+				// }
+				// if (board[i][j] == -2*chk){
+					// if (prev != -1){
+						// rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
+					// }
+					// prev = -1;
+				// }
+				// dist++;
+				// ctr = 0;
+			// }
+		// }
+		// if (ctr > 0)
+		// {
+			// rows[selectRowLength(ctr, prev, dist)] += 1;
+		// }
 	// }
 
-	for (i = 0; i < boardSize; i++)
-	{
-		ctr = 0;
-		prev = -1;
-		dist = -1;
-		for (j = x_lims.at(i).first; j <= x_lims.at(i).second; j++)
-		{
-			if (board[i][j] == chk || board[i][j] == 2 * chk)
-				ctr++;
-			else
-			{
-				if (ctr > 0)
-				{
-					rows[selectRowLength(ctr, prev, dist)] += 1;
-					dist = 0;
-					prev = ctr;
-				}
-				if (board[i][j] == -2*chk){
-					if (prev != -1){
-						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
-					}
-					prev = -1;
-				}
-				dist++;
-				ctr = 0;
-			}
-		}
-		if (ctr > 0)
-		{
-			rows[selectRowLength(ctr, prev, dist)] += 1;
-		}
-	}
+	// for (i = 0; i < boardSize; i++)
+	// {
+		// ctr = 0;
+		// prev = -1;
+		// dist = -1;
+		// for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
+		// {
+			// if (board[j][i] == chk || board[j][i] == 2 * chk)
+				// ctr++;
+			// else
+			// {
+				// if (ctr > 0)
+				// {
+					// rows[selectRowLength(ctr, prev, dist)] += 1;
+					// dist = 0;
+					// prev = ctr;
+				// }
+				// if (board[j][i] == -2*chk){
+					// if (prev != -1){
+						// rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
+					// }					
+					// prev = -1;
+				// }
+				// dist++;
+				// ctr = 0;
+			// }
+		// }
+		// if (ctr > 0)
+		// {
+			// rows[selectRowLength(ctr, prev, dist)] += 1;
+		// }
+	// }
 
-	for (i = 0; i < boardSize; i++)
-	{
-		ctr = 0;
-		prev = -1;
-		dist = -1;
-		for (j = y_lims.at(i).first; j <= y_lims.at(i).second; j++)
-		{
-			if (board[j][i] == chk || board[j][i] == 2 * chk)
-				ctr++;
-			else
-			{
-				if (ctr > 0)
-				{
-					rows[selectRowLength(ctr, prev, dist)] += 1;
-					dist = 0;
-					prev = ctr;
-				}
-				if (board[j][i] == -2*chk){
-					if (prev != -1){
-						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
-					}					
-					prev = -1;
-				}
-				dist++;
-				ctr = 0;
-			}
-		}
-		if (ctr > 0)
-		{
-			rows[selectRowLength(ctr, prev, dist)] += 1;
-		}
-	}
+	// int it;
+	// for (i = 0; i < 2 * boardSize - 1; i++)
+	// {
+		// if (xy_lims.at(i).first == 0 && xy_lims.at(i).second == 0)
+			// continue;
+		// ctr = 0;
+		// prev = -1;
+		// dist = -1;
+		// it = xy_lims.at(i).first - boardSize + i + 1;
+		// for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
+		// {
+			// if (board[it][j] == chk || board[it][j] == 2 * chk)
+				// ctr++;
+			// else
+			// {
+				// if (ctr > 0)
+				// {
+					// rows[selectRowLength(ctr, prev, dist)] += 1;
+					// dist = 0;
+					// prev = ctr;
+				// }
+				// if (board[it][j] == -2*chk){
+					// if (prev != -1){
+						// rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
+					// }
+					// prev = -1;
+				// }
+				// dist++;
+				// ctr = 0;
+			// }
+		// }
+		// if (ctr > 0)
+		// {
+			// rows[selectRowLength(ctr, prev, dist)] += 1;
+		// }
+	// }
 
-	int it;
-	for (i = 0; i < 2 * boardSize - 1; i++)
-	{
-		if (xy_lims.at(i).first == 0 && xy_lims.at(i).second == 0)
-			continue;
-		ctr = 0;
-		prev = -1;
-		dist = -1;
-		it = xy_lims.at(i).first - boardSize + i + 1;
-		for (j = xy_lims.at(i).first; j <= xy_lims.at(i).second; j++, it++)
-		{
-			if (board[it][j] == chk || board[it][j] == 2 * chk)
-				ctr++;
-			else
-			{
-				if (ctr > 0)
-				{
-					rows[selectRowLength(ctr, prev, dist)] += 1;
-					dist = 0;
-					prev = ctr;
-				}
-				if (board[it][j] == -2*chk){
-					if (prev != -1){
-						rows[(prev > numRingsForRow ? numRingsForRow-1 : prev-1)] -= 0.7;
-					}
-					prev = -1;
-				}
-				dist++;
-				ctr = 0;
-			}
-		}
-		if (ctr > 0)
-		{
-			rows[selectRowLength(ctr, prev, dist)] += 1;
-		}
-	}
+	// double metric = 0.0;
+	// for (i = 0; i < numRingsForRow; i++)
+	// {
+		// // cout << rows[i] << " ";
+		// metric += (rows[i] * coeffs[i]);
+	// }
+	// return metric;
+// }
 
-	double metric = 0.0;
-	for (i = 0; i < numRingsForRow; i++)
-	{
-		// cout << rows[i] << " ";
-		metric += (rows[i] * coeffs[i]);
-	}
-	return metric;
+// double Game::computeMetric()
+// {
+	// double metric = 0;
+	// for (int i = 0; i < boardSize; i++)
+	// {
+		// for (int j = 0; j < boardSize; j++)
+		// {
+			// if (board[i][j] == -7)
+			// {
+				// continue;
+			// }
+			// // else if (board[i][j] == 0)
+			// // {
+				// // metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.3 * nrows[i][j];
+			// // }
+			// // else if (board[i][j] == 2 * playerAssgn)
+			// // {
+				// // metric += 0.5 * nrows[i][j];
+			// // }
+			// // else if (board[i][j] == -2 * playerAssgn)
+			// // {
+				// // metric -= 0.5 * nrows[i][j];
+			// // }
+			// else if (board[i][j] == 1)
+			// {
+				// metric += playerAssgn * (-1*0.6 * playerNeg[i][j] - 0.15 * playerPos[i][j]) * nrows[i][j];
+			// }
+			// else
+			// {
+				// metric += playerAssgn * (-1*0.6 * playerPos[i][j] - 0.15 * playerNeg[i][j]) * nrows[i][j];
+			// }
+			// playerPos[i][j] = 0;
+			// playerNeg[i][j] = 0;
+		// }
+	// }
+	// return metric;
+// }
+
+// double Game::getUtility()
+// {
+	// // Return the utility of the current state
+	// // Utility of win state should be highest and of lose state should be minimum
+	// // displayP();
+	// // cout << "---------------------------" <<endl;
+	// // displayN();
+	// // cout << "---------------------------" <<endl;
+	// double util1 = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
+	// double util2 = getRingUtility();
+	// return util1 + 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
+	// // return 0.0;
+// }
+
+// double Game::getRingUtility()
+// {
+	// computePlayerPos();
+	// computePlayerNeg();
+	// return computeMetric();
+// }
+
+double Game::getRandUtility()
+{
+    double rnd = ((double) rand() / (RAND_MAX));
+	// cout << rnd;
+	return rnd;
 }
 
-double Game::computeMetric()
+string Game::nninput()
 {
-	double metric = 0;
+	string result;
 	for (int i = 0; i < boardSize; i++)
 	{
 		for (int j = 0; j < boardSize; j++)
 		{
-			if (board[i][j] == -7)
-			{
-				continue;
+			if (board[i][j] != -7){
+				result += to_string(board[i][j]+2);
 			}
-			// else if (board[i][j] == 0)
-			// {
-				// metric += playerAssgn * (playerPos[i][j] - playerNeg[i][j]) * 0.3 * nrows[i][j];
-			// }
-			// else if (board[i][j] == 2 * playerAssgn)
-			// {
-				// metric += 0.5 * nrows[i][j];
-			// }
-			// else if (board[i][j] == -2 * playerAssgn)
-			// {
-				// metric -= 0.5 * nrows[i][j];
-			// }
-			else if (board[i][j] == 1)
-			{
-				metric += playerAssgn * (-1*0.6 * playerNeg[i][j] - 0.15 * playerPos[i][j]) * nrows[i][j];
-			}
-			else
-			{
-				metric += playerAssgn * (-1*0.6 * playerPos[i][j] - 0.15 * playerNeg[i][j]) * nrows[i][j];
-			}
-			playerPos[i][j] = 0;
-			playerNeg[i][j] = 0;
 		}
 	}
-	return metric;
-}
-
-double Game::getUtility()
-{
-	// Return the utility of the current state
-	// Utility of win state should be highest and of lose state should be minimum
-	// displayP();
-	// cout << "---------------------------" <<endl;
-	// displayN();
-	// cout << "---------------------------" <<endl;
-	double util1 = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
-	double util2 = getRingUtility();
-	return util1 + 40 * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
-	// return 0.0;
-}
-
-double Game::getRingUtility()
-{
-	computePlayerPos();
-	computePlayerNeg();
-	return computeMetric();
+	return result;
 }

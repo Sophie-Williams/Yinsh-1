@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "Move.h"
 #include <vector>
+#include <random>
 using namespace std;
 
 class Player
@@ -23,6 +24,8 @@ class Player
      */
     int minimaxDepth;
 
+	
+	public:
     /** 
      * The Game state maintained by our player - TEMPORARY
      */
@@ -41,20 +44,20 @@ class Player
      * Returns the best Move to play from the current game state for current player
      * hasMovedYet means in the calling history has the concerned player played a ring moving game
      */
-    bestAction maxValue(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction maxValue(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction maxValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction maxValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction maxValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction maxValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
 
     /**
      * Returns the best Move to play from the current game state for opponent player
      */
-    bestAction minValue(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta);
+    bestAction minValue(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction minValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction minValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction minValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
+    bestAction minValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta, bool diag = false);
 
     /**
      * Takes in input for the opponent's move
@@ -62,7 +65,7 @@ class Player
      */
     void playOpponentMove();
 
-  public:
+  
 
     /**
      * @Constructor
