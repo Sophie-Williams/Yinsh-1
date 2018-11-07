@@ -34,7 +34,7 @@ class MicroMove
     /**
      * @Getters
      */
-    char getType() {
+    char getType() const {
       return type;
     }
 

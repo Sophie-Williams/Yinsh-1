@@ -853,7 +853,7 @@ double Game::getMicroMoveUtility(const MicroMove &move)
 	if (!status)
 		cerr << "Unable to makeMove in Game::getMicroMoveUtility" << move.cartesianToPolarString(boardSize) << endl;
 
-	double utility = getUtility();
+	double utility = getUtility(this->playerAssgn);
 
 	// Unmake the move
 	status = unmakeMicroMove(move);
@@ -1543,7 +1543,7 @@ double Game::computeMetric()
 	return metric;
 }
 
-double Game::getUtility()
+double Game::getUtility(int onTurn)
 {
 	// Return the utility of the current state
 	// Utility of win state should be highest and of lose state should be minimum
@@ -1552,9 +1552,9 @@ double Game::getUtility()
 	// displayN();
 	// cout << "---------------------------" <<endl;
 	double ringWt = 10000;
-	double util1 = computeMetric2(playerAssgn) - computeMetric2(-1 * playerAssgn);
+	double util1 = computeMetric2(onTurn) - computeMetric2(-1 * onTurn);
 	double util2 = getRingUtility();
-	return util1 + ringWt * playerAssgn * ((int)ringsNegative.size() - (int)ringsPositive.size());
+	return util1 + ringWt * onTurn * ((int)ringsNegative.size() - (int)ringsPositive.size());
 	// return 0.0;
 }
 

@@ -296,7 +296,7 @@ class Game
      * Returns the utility of this state w.r.t. `playerToMove`
      * Called each time when minimax is cut-off
      */
-    double getUtility(); // @Soumya
+    double getUtility(int onTurn); // @Soumya
 	double getRingUtility();
 };
 
