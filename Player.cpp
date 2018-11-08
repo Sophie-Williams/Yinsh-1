@@ -97,8 +97,8 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
 
     bestAction bAction = make_pair(-INF, Move());
     bool isFirst = true;
-    double beta2 = beta;
-    int pruned = 0;
+    // double beta2 = beta;
+    // int pruned = 0;
 
     // Iterate over all moves
     for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
@@ -111,6 +111,12 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
             // have to remove a row
             // Null window search
             bestAction ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
+            // bestAction ourAction;
+            // ourAction = AlphaBeta(depth, true, -1 * onTurn, alpha, alpha + 1);
+            // if (ourAction.first > alpha && ourAction.first < beta && !isFirst)
+            // {
+            //     ourAction = AlphaBeta(depth, true, -1 * onTurn, alpha, beta);
+            // }
 
             if (ourAction.first > bAction.first)
             {
@@ -122,34 +128,37 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
             }
 
             deapplyMove(*microMv, 'M', 2, false);
+            // isFirst = false;
         }
         else if (game->getGameState() == 2)
         {
             game->flipPlayerToMove();
             bestAction oppAction;
-            oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
-            oppAction.first *= -1;
-            if (oppAction.first > alpha && oppAction.first < beta && !isFirst) {
-                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
-                oppAction.first *= -1;
-            }
-            // if (isFirst)
+            // oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
+            // oppAction.first *= -1;
+            // if (oppAction.first > alpha && oppAction.first < beta && !isFirst)
             // {
             //     oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
             //     oppAction.first *= -1;
             // }
-            // else
-            // {
-            //     oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
-            //     oppAction.first *= -1;
-            //     if (oppAction.first > alpha && oppAction.first < beta)
-            //     {
-            //         oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
-            //         oppAction.first *= -1;
-            //     } else {
-            //         pruned++;
-            //     }
-            // }
+            if (isFirst)
+            {
+                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+                oppAction.first *= -1;
+            }
+            else
+            {
+                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
+                oppAction.first *= -1;
+                if (oppAction.first > alpha && oppAction.first < beta)
+                {
+                    oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+                    oppAction.first *= -1;
+                } 
+                // else {
+                    // pruned++;
+                // }
+            }
 
             if (oppAction.first > bAction.first)
             {
@@ -171,8 +180,7 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
         {
             break;
         }
-        beta2 = alpha + 1;
-
+        // beta2 = alpha + 1;
     }
 
     // cerr << pruned << "/" << moves.size() << " pruned\n";
@@ -1056,14 +1064,14 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
-    else if (movesPlayed < 22)
+    else if (movesPlayed < 16)
     {
         minimaxDepth = 3;
     }
     // else if (timeRemaining > 40)
     // {
     //     // In crucial game play => play thoughtfully
-    //     minimaxDepth = 4;
+    //     minimaxDepth = 5;
     // }
     else if (timeRemaining > 2)
     {
