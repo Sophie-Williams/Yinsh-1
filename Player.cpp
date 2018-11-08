@@ -110,8 +110,20 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
         {
             // have to remove a row
             // Null window search
-            bestAction ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
-            // bestAction ourAction;
+            // bestAction ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
+            bestAction ourAction;
+            if (isFirst)
+            {
+                ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
+            }
+            else
+            {
+                ourAction = AlphaBeta(depth, true, onTurn, alpha, alpha + 1);
+                if (ourAction.first > alpha && ourAction.first < beta)
+                {
+                    ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
+                }
+            }
             // ourAction = AlphaBeta(depth, true, -1 * onTurn, alpha, alpha + 1);
             // if (ourAction.first > alpha && ourAction.first < beta && !isFirst)
             // {
@@ -128,19 +140,12 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
             }
 
             deapplyMove(*microMv, 'M', 2, false);
-            // isFirst = false;
+            isFirst = false;
         }
         else if (game->getGameState() == 2)
         {
             game->flipPlayerToMove();
             bestAction oppAction;
-            // oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
-            // oppAction.first *= -1;
-            // if (oppAction.first > alpha && oppAction.first < beta && !isFirst)
-            // {
-            //     oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
-            //     oppAction.first *= -1;
-            // }
             if (isFirst)
             {
                 oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
@@ -154,9 +159,9 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
                 {
                     oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
                     oppAction.first *= -1;
-                } 
+                }
                 // else {
-                    // pruned++;
+                // pruned++;
                 // }
             }
 
@@ -1015,7 +1020,7 @@ void Player::playOpponentMove()
 
 void Player::playGame()
 {
-    // cout << "In playGame " << player << endl;
+    cerr << "In playGame " << player << endl;
 
     if (player < 0)
     {
@@ -1064,15 +1069,15 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
-    else if (movesPlayed < 16)
+    else if (movesPlayed < 9)
     {
         minimaxDepth = 3;
     }
-    // else if (timeRemaining > 40)
-    // {
-    //     // In crucial game play => play thoughtfully
-    //     minimaxDepth = 5;
-    // }
+    else if (timeRemaining > 40)
+    {
+        // In crucial game play => play thoughtfully
+        minimaxDepth = 4;
+    }
     else if (timeRemaining > 2)
     {
         // Pace up
