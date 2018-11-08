@@ -41,11 +41,6 @@ class Player
      * Returns the best Move to play from the current game state for current player
      * hasMovedYet means in the calling history has the concerned player played a ring moving game
      */
-    bestAction maxValue(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction maxValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta);
 
     bestAction AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta);
     bestAction AlphaBetaPlaceRing(int depth, bool hasMoved, int onTurn, double alpha, double beta);
@@ -56,15 +51,6 @@ class Player
     void applyMove(const MicroMove &move, char type,  bool flipState=true);
     void deapplyMove(const MicroMove &move, char type, int finalState, bool flipState = true);
     
-    /**
-     * Returns the best Move to play from the current game state for opponent player
-     */
-    bestAction minValue(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValuePlaceRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValueMoveRing(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValueRemoveRow(int depth, bool hasMovedYet, double alpha, double beta);
-    bestAction minValueRemoveRing(int depth, bool hasMovedYet, double alpha, double beta);
-
     /**
      * Takes in input for the opponent's move
      * Processes the move and play's the move in our game state
