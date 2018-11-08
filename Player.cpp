@@ -96,6 +96,9 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
     vector<MicroMove> moves = game->getAllMoves(false);
 
     bestAction bAction = make_pair(-INF, Move());
+    bool isFirst = true;
+    double beta2 = beta;
+    int pruned = 0;
 
     // Iterate over all moves
     for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
@@ -106,6 +109,7 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
         if (game->getGameState() == 3)
         {
             // have to remove a row
+            // Null window search
             bestAction ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
 
             if (ourAction.first > bAction.first)
@@ -122,8 +126,30 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
         else if (game->getGameState() == 2)
         {
             game->flipPlayerToMove();
-            bestAction oppAction = AlphaBeta(depth - 1, hasMoved, -1*onTurn, -beta, -alpha);
+            bestAction oppAction;
+            oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
             oppAction.first *= -1;
+            if (oppAction.first > alpha && oppAction.first < beta && !isFirst) {
+                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+                oppAction.first *= -1;
+            }
+            // if (isFirst)
+            // {
+            //     oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+            //     oppAction.first *= -1;
+            // }
+            // else
+            // {
+            //     oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
+            //     oppAction.first *= -1;
+            //     if (oppAction.first > alpha && oppAction.first < beta)
+            //     {
+            //         oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+            //         oppAction.first *= -1;
+            //     } else {
+            //         pruned++;
+            //     }
+            // }
 
             if (oppAction.first > bAction.first)
             {
@@ -133,6 +159,7 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
             }
 
             deapplyMove(*microMv, 'M', 2);
+            isFirst = false;
         }
         else
         {
@@ -144,8 +171,11 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
         {
             break;
         }
+        beta2 = alpha + 1;
+
     }
 
+    // cerr << pruned << "/" << moves.size() << " pruned\n";
     return bAction;
 }
 
@@ -227,7 +257,7 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
         else if (game->getGameState() == 2)
         {
             game->flipPlayerToMove();
-            bestAction oppAction = AlphaBeta(depth - 1, hasMoved, -1*onTurn, -beta, -alpha);
+            bestAction oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
             oppAction.first *= -1;
 
             if (oppAction.first > bAction.first)
