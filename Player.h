@@ -63,7 +63,7 @@ class Player
      * @Constructor
      * Input: Player 0 (1) or Player 1 (-1)
      */
-    Player(int playerType, int numRings, double totatTime, double currentTime);
+    Player(int playerType, int numRings, int seqLen, double totatTime, double currentTime);
 
     /**
      * Game playing function

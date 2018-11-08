@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     // return 0;
 
     int player;
-    int N;
+    int N, K;
     double timeLeft;
 
     // Take the game parameters from console
@@ -26,6 +26,7 @@ int main(int argc, char **argv)
     player = stoi(ins[0]);
     N = stoi(ins[1]);
     timeLeft = stof(ins[2]);
+    K = stoi(ins[3]);
 
     // Seeding for random number generation
     srand(time(NULL));
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
     player = (player == 1) ? 1 : -1;
 
     // Spawn an instance of Player and play the game
-    Player *yinsh = new Player(player, N, timeLeft, time(NULL));
+    Player *yinsh = new Player(player, N, K, timeLeft, time(NULL));
     yinsh->playGame();
     // yinsh -> game -> displayBoard();
     // yinsh -> game -> dispLims();

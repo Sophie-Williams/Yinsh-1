@@ -51,7 +51,7 @@ class Game
      */
     // Game();
 	
-	  Game(int numberOfRings, int playerType);
+	  Game(int numberOfRings, int seqLength, int playerType);
 
     /**
      * Returns the `playerToMove`

@@ -10,13 +10,13 @@ bool isEqualPair(pair<int, int> P, pair<int, int> Q)
 	return (P.first == Q.first && P.second == Q.second);
 }
 
-Game::Game(int numberOfRings, int playerType)
+Game::Game(int numberOfRings, int seqLength, int playerType)
 {
 	// Initialise board specifications
 	numRings = numberOfRings;
 	boardSize = numberOfRings * 2 + 1;
 	numRingsToRemove = 3;
-	numRingsForRow = numberOfRings;
+	numRingsForRow = seqLength;
 
 	// Allocate a board
 	board = new int *[boardSize];
@@ -1114,7 +1114,8 @@ void Game::displayBoard()
 void Game::displayHexagonalBoard()
 {
 	int limit = 2 * (boardSize - 1) - 1;
-	limit = 2 * 10 - 1 + 6;
+	// limit = 2 * 10 - 1 + 6;
+	limit += 6;
 
 	int hexBoard[limit + 1][limit + 1];
 	for (int X = 0; X <= limit; X++)
@@ -1128,12 +1129,12 @@ void Game::displayHexagonalBoard()
 			if (board[x][y] == -7)
 				continue;
 			int X = 2 * x;
-			int Y = 5 + 2 * y - x;
+			int Y = (boardSize / 2) + 2 * y - x;
 			hexBoard[X][Y] = board[x][y];
 		}
 	}
 
-	for (int Y = limit - 5; Y >= 0; Y--)
+	for (int Y = limit - (boardSize / 2); Y >= 0; Y--)
 	{
 		for (int X = 0; X <= limit - 3; X++)
 		{
@@ -1387,7 +1388,7 @@ double Game::computeMetric2(int player)
 	vector<double> rows(numRingsForRow, 0.0);
 	// double coeffs[] = {0.3, 0.5, 0.9, 1.6, 2.7};
 	// double coeffs[] = {0.3, 0.9, 2.7, 8.1, 24.3};
-	double coeffs[] = {0.5, 5, 50, 250, 1250};
+	double coeffs[] = {0.5, 5, 50, 250, 1250, 6250};
 
 	// for (i = 0; i <= numRingsForRow; i++){
 	// 	rows[i] = 0;
@@ -1551,7 +1552,7 @@ double Game::getUtility(int onTurn)
 	// cout << "---------------------------" <<endl;
 	// displayN();
 	// cout << "---------------------------" <<endl;
-	double ringWt = 10000;
+	double ringWt = (numRingsForRow == 5) ? 10000 : 50000;
 	double util1 = computeMetric2(onTurn) - computeMetric2(-1 * onTurn);
 	double util2 = getRingUtility();
 	return util1 + ringWt * onTurn * ((int)ringsNegative.size() - (int)ringsPositive.size());

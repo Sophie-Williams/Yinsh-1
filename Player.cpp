@@ -8,14 +8,14 @@
 #include <ctime>
 using namespace std;
 
-Player::Player(int playerType, int numRings, double totalTime, double currentTime)
+Player::Player(int playerType, int numRings, int seqLen, double totalTime, double currentTime)
 {
     player = playerType;
     minimaxDepth = 1;
     movesPlayed = 0;
 
     // Initialise the game instance
-    game = new Game(numRings, playerType);
+    game = new Game(numRings, seqLen, playerType);
 
     // Set up timers
     startTime = currentTime;
@@ -405,11 +405,11 @@ void Player::updateGameStrategy(double beginTime)
     {
         minimaxDepth = 3;
     }
-    else if (timeRemaining > 40)
-    {
-        // In crucial game play => play thoughtfully
-        minimaxDepth = 4;
-    }
+    // else if (timeRemaining > 40)
+    // {
+    //     // In crucial game play => play thoughtfully
+    //     minimaxDepth = 4;
+    // }
     else if (timeRemaining > 2)
     {
         // Pace up
