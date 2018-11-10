@@ -25,48 +25,7 @@ Player::Player(int playerType, int numRings, int seqLen, double totalTime, doubl
     finalPhase = false;
 }
 
-int total;
-int g200;
-int g500;
-int g1000;
-int g1500;
-int g3000;
-int g5000;
-int g7500;
-int g10000;
-int g12000;
-int g25000;
-int g50000;
 int qui;
-void updateDiff(double diff)
-{
-    if (diff >= 50000)
-        g50000++;
-    if (diff >= 25000)
-        g25000++;
-    if (diff >= 12000)
-    {
-        cerr << diff << " ";
-        g12000++;
-    }
-    if (diff >= 10000)
-        g10000++;
-    if (diff >= 7500)
-        g7500++;
-    if (diff >= 5000)
-        g5000++;
-    if (diff >= 3000)
-        g3000++;
-    if (diff >= 1500)
-        g1500++;
-    if (diff >= 1000)
-        g1000++;
-    if (diff >= 500)
-        g500++;
-    if (diff >= 200)
-        g200++;
-    total++;
-}
 
 bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
@@ -319,7 +278,7 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
     vector<MicroMove> moves = game->getAllMoves(false);
 
     bestAction bAction = make_pair(-INF, Move());
-    if (depth <= 1)
+    if (depth <= 2)
         hasQuiesenced = finalPhase; // If not in final phase, do quiesence
 
     // Iterate over all moves
@@ -447,8 +406,6 @@ void Player::playGame()
     {
         double currTime = time(NULL);
 
-        total = g200 = g500 = g1000 = g1500 = g3000 = g5000 = g7500 = g10000 = g12000 = g25000 = g50000 = 0;
-
         // Get our move and play and then tell the opponent
         // Move ourMove = maxValue(minimaxDepth, false, -INF, INF).second;
         double utility = game->getUtility(this->player);
@@ -457,7 +414,6 @@ void Player::playGame()
         qui = 0;
         Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, true).second;
         cerr << "qui: " << qui << endl;
-        // cerr << total << " " << g200 << " " << g500 << " " << g1000 << " " << g1500 << " " << g3000 << " " << g5000 << " " << g7500 << " " << g10000 << " " << g12000 << " " << g25000 << " " << g50000 << endl;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
@@ -481,6 +437,11 @@ void Player::updateGameStrategy(double beginTime)
     timeRemaining = timeAlloted - timeSpent;
 
     movesPlayed++;
+    int depth4Cutoff = 50;
+    if (game->getNumRings() == 5)
+        depth4Cutoff = 45;
+    else if (game->getNumRingsForRow() == 6)
+        depth4Cutoff = 55;
 
     if (game->getGameState() == 1)
     {
@@ -499,11 +460,11 @@ void Player::updateGameStrategy(double beginTime)
     {
         minimaxDepth = 3;
     }
-    // else if (timeRemaining > depth4Cutoff)
-    // {
-    //     // In crucial game play => play thoughtfully
-    //     minimaxDepth = 4;
-    // }
+    else if (game->getNumRings() == 5 && timeRemaining > depth4Cutoff)
+    {
+        // In crucial game play => play thoughtfully
+        minimaxDepth = 4;
+    }
     else if (timeRemaining > 2)
     {
         // Pace up
@@ -515,11 +476,6 @@ void Player::updateGameStrategy(double beginTime)
         minimaxDepth = 2;
     }
 
-    int depth4Cutoff = 50;
-    if (game->getNumRings() == 5)
-        depth4Cutoff = 45;
-    else if (game->getNumRingsForRow() == 6)
-        depth4Cutoff = 55;
     if (timeRemaining < depth4Cutoff)
     {
         // urgency
