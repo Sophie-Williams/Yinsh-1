@@ -57,6 +57,15 @@ class Game
      * Returns the `playerToMove`
      */
     int getPlayerToMove ();
+    /**
+     * Getters
+     */
+    int getNumRings () {
+      return numRings;
+    }
+    int getNumRingsForRow () {
+      return numRingsForRow;
+    }
 
     vector<pair<int, int>> getRingsPositive () {
       return ringsPositive;

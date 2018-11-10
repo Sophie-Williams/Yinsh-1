@@ -22,6 +22,8 @@ Player::Player(int playerType, int numRings, int seqLen, double totalTime, doubl
     timeAlloted = totalTime - 1.5; // A one second safeguard
     timeSpent = (time(NULL) - startTime);
     timeRemaining = timeAlloted - timeSpent;
+    finalPhase = false;
+    cutOff = 1;
 }
 
 int total;
@@ -36,28 +38,40 @@ int g10000;
 int g12000;
 int g25000;
 int g50000;
-void updateDiff(double diff) {
-    if (diff >= 50000) g50000++;
-    if (diff >= 25000) g25000++;
-    if (diff >= 12000) {
+void updateDiff(double diff)
+{
+    if (diff >= 50000)
+        g50000++;
+    if (diff >= 25000)
+        g25000++;
+    if (diff >= 12000)
+    {
         cerr << diff << " ";
         g12000++;
     }
-    if (diff >= 10000) g10000++;
-    if (diff >= 7500) g7500++;
-    if (diff >= 5000) g5000++;
-    if (diff >= 3000) g3000++;
-    if (diff >= 1500) g1500++;
-    if (diff >= 1000) g1000++;
-    if (diff >= 500) g500++;
-    if (diff >= 200) g200++;
+    if (diff >= 10000)
+        g10000++;
+    if (diff >= 7500)
+        g7500++;
+    if (diff >= 5000)
+        g5000++;
+    if (diff >= 3000)
+        g3000++;
+    if (diff >= 1500)
+        g1500++;
+    if (diff >= 1000)
+        g1000++;
+    if (diff >= 500)
+        g500++;
+    if (diff >= 200)
+        g200++;
     total++;
 }
 
 bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     int currentState = game->getGameState();
-    double quiesenceCutOff = 10000; // DEPENDS ON GAME->GETUTILITY() parameters. Change it if you change them
+    double quiesenceCutOff = (game->getNumRingsForRow() == 5) ? 10000 : 50000; // DEPENDS ON GAME->GETUTILITY() parameters. Change it if you change them
     int quiesenceDepth = 1;
 
     // if terminal state then exit
@@ -66,11 +80,15 @@ bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha,
     //     double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
     //     return make_pair(utility, Move());
     // }
-    if (game->isTerminalState()) {
+    if (game->isTerminalState())
+    {
         double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
         return make_pair(utility, Move());
-    } else if (depth <= 0) {
-        if (currentState == 1) {
+    }
+    else if (depth <= 0)
+    {
+        if (currentState == 1)
+        {
             double utility = game->computeRingUtility();
             return make_pair(utility, Move());
         }
@@ -78,13 +96,16 @@ bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha,
         double diff = abs(utility - parentUtility);
 
         // cerr << (utility - parentUtility) << " ";
-        if (!hasQuiesenced && diff>= quiesenceCutOff) {
+        if (!hasQuiesenced && diff >= quiesenceCutOff)
+        {
             // Do a Quiescence_search
-            cerr << "doing Quiensence" << endl;
+            // cerr << "doing Quiensence" << endl;
             return AlphaBeta(quiesenceDepth, hasMoved, onTurn, alpha, beta, parentUtility, true);
-        } else {
+        }
+        else
+        {
             // A quiet node
-            updateDiff(diff);
+            // updateDiff(diff);
             return make_pair(utility, Move());
         }
     }
@@ -149,6 +170,12 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
+    // // Do away with half the moves
+    // int N = moves.size();
+    // int C = min(N, (int)(cutOff*N));
+    // if (N > 10) {
+    //     moves.erase(moves.begin()+C, moves.end());
+    // }
 
     bestAction bAction = make_pair(-INF, Move());
     bool isFirst = true;
@@ -428,9 +455,10 @@ void Player::playGame()
         // Get our move and play and then tell the opponent
         // Move ourMove = maxValue(minimaxDepth, false, -INF, INF).second;
         double utility = game->getUtility(this->player);
-        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, false).second;
+        bool doQuiesence = (finalPhase) ? false : true;
+        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, !doQuiesence).second;
         cerr << endl;
-        cerr << total << " " << g200 << " " << g500 << " " << g1000 << " " << g1500 << " " << g3000 << " " << g5000 << " " << g7500 << " " << g10000 << " " << g12000 << " " << g25000 << " " << g50000 << endl;
+        // cerr << total << " " << g200 << " " << g500 << " " << g1000 << " " << g1500 << " " << g3000 << " " << g5000 << " " << g7500 << " " << g10000 << " " << g12000 << " " << g25000 << " " << g50000 << endl;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
@@ -451,6 +479,7 @@ void Player::updateGameStrategy(double beginTime)
     // Update the timers
     timeSpent += time(NULL) - beginTime;
     timeRemaining = timeAlloted - timeSpent;
+
     movesPlayed++;
 
     if (game->getGameState() == 1)
@@ -465,7 +494,7 @@ void Player::updateGameStrategy(double beginTime)
     {
         minimaxDepth = 3;
     }
-    // else if (timeRemaining > 40)
+    // else if (timeRemaining > depth4Cutoff)
     // {
     //     // In crucial game play => play thoughtfully
     //     minimaxDepth = 4;
@@ -481,7 +510,25 @@ void Player::updateGameStrategy(double beginTime)
         minimaxDepth = 2;
     }
 
+    if (movesPlayed <= 8) {
+        cutOff = 0.6;
+    } else if (movesPlayed <= 10) {
+        cutOff = 0.8;
+    } else {
+        cutOff = 1.0;
+    }
+
+    int depth4Cutoff = 50;
+    if (game->getNumRings() == 5)
+        depth4Cutoff = 45;
+    else if (game->getNumRingsForRow() == 6)
+        depth4Cutoff = 55;
+    if (timeRemaining < depth4Cutoff)
+    {
+        // urgency
+        finalPhase = true;
+    }
     // minimaxDepth = 1;
 
-    cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << " | movesPlayed: " << movesPlayed << endl;
+    cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << " Quiesence: " << !finalPhase << " | movesPlayed: " << movesPlayed << endl;
 }
