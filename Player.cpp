@@ -96,7 +96,7 @@ bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha,
         double diff = abs(utility - parentUtility);
 
         // cerr << (utility - parentUtility) << " ";
-        if (!hasQuiesenced)
+        if (!hasQuiesenced && diff >= quiesenceCutOff)
         {
             // Do a Quiescence_search
             // cerr << "doing Quiensence" << endl;
