@@ -71,45 +71,45 @@ void updateDiff(double diff)
 bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     int currentState = game->getGameState();
-    double quiesenceCutOff = (game->getNumRingsForRow() == 5) ? 10000 : 50000; // DEPENDS ON GAME->GETUTILITY() parameters. Change it if you change them
+    double quiesenceCutOff = (game->getNumRingsForRow() == 5) ? 0 : 0; // DEPENDS ON GAME->GETUTILITY() parameters. Change it if you change them
     int quiesenceDepth = 1;
 
     // if terminal state then exit
-    // if (depth <= 0 || game->isTerminalState())
-    // {
-    //     double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
-    //     return make_pair(utility, Move());
-    // }
-    if (game->isTerminalState())
+    if (depth <= 0 || game->isTerminalState())
     {
         double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
         return make_pair(utility, Move());
     }
-    else if (depth <= 0)
-    {
-        if (currentState == 1)
-        {
-            double utility = game->computeRingUtility();
-            return make_pair(utility, Move());
-        }
-        double utility = game->getUtility(onTurn);
-        double diff = abs(utility - parentUtility);
+    // if (game->isTerminalState())
+    // {
+    //     double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
+    //     return make_pair(utility, Move());
+    // }
+    // else if (depth <= 0)
+    // {
+    //     if (currentState == 1)
+    //     {
+    //         double utility = game->computeRingUtility();
+    //         return make_pair(utility, Move());
+    //     }
+    //     double utility = game->getUtility(onTurn);
+    //     double diff = abs(utility - parentUtility);
 
-        // cerr << (utility - parentUtility) << " ";
-        if (!hasQuiesenced && diff >= quiesenceCutOff)
-        {
-            // Do a Quiescence_search
-            // cerr << "doing Quiensence" << endl;
-            qui++;
-            return AlphaBeta(quiesenceDepth, hasMoved, onTurn, alpha, beta, parentUtility, true);
-        }
-        else
-        {
-            // A quiet node
-            // updateDiff(diff);
-            return make_pair(utility, Move());
-        }
-    }
+    //     // cerr << (utility - parentUtility) << " ";
+    //     if (!hasQuiesenced && diff >= quiesenceCutOff)
+    //     {
+    //         // Do a Quiescence_search
+    //         // cerr << "doing Quiensence" << endl;
+    //         qui++;
+    //         return AlphaBeta(quiesenceDepth, hasMoved, onTurn, alpha, beta, parentUtility, true);
+    //     }
+    //     else
+    //     {
+    //         // A quiet node
+    //         // updateDiff(diff);
+    //         return make_pair(utility, Move());
+    //     }
+    // }
 
     // compute best move to play
     switch (currentState)
@@ -317,10 +317,8 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
-
+    // cerr << moves.size() << " ";
     bestAction bAction = make_pair(-INF, Move());
-    if (depth <= 1)
-        hasQuiesenced = finalPhase; // If not in final phase, do quiesence
 
     // Iterate over all moves
     for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
@@ -330,6 +328,11 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
 
         if (game->getGameState() == 3 || !hasMoved)
         {
+            // if (depth <= 1)
+            // {
+            //     hasQuiesenced = finalPhase; // If not in final phase, do quiesence
+            //     parentUtility = game->getUtility(onTurn);
+            // }
             // have to remove a row or move a ring is not done before
             bestAction ourAction = AlphaBeta(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
 
@@ -349,6 +352,16 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
         else if (game->getGameState() == 2)
         {
             game->flipPlayerToMove();
+            // if (depth <= 1)
+            // // {
+            //     // hasQuiesenced = finalPhase; // If not in final phase, do quiesence
+            //     // parentUtility = game->getUtility(-1*onTurn);
+            // }
+            if (depth <= 1 && !hasQuiesenced) {
+                depth++;
+                hasQuiesenced = true;
+                qui++;
+            }
             bestAction oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha, parentUtility, hasQuiesenced);
             oppAction.first *= -1;
 
@@ -455,8 +468,8 @@ void Player::playGame()
         // bool doQuiesence = (finalPhase) ? false : true;
         // cerr << !doQuiesence << endl;
         qui = 0;
-        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, true).second;
-        cerr << "qui: " << qui << endl;
+        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, finalPhase).second;
+        cerr << "\nqui: " << qui << endl;
         // cerr << total << " " << g200 << " " << g500 << " " << g1000 << " " << g1500 << " " << g3000 << " " << g5000 << " " << g7500 << " " << g10000 << " " << g12000 << " " << g25000 << " " << g50000 << endl;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
