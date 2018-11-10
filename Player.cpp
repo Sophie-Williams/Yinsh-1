@@ -384,13 +384,13 @@ void Player::playOpponentMove()
     game->makeMove(move);
 
     // game->displayHexagonalBoard();
-    cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << move.cartesianToPolarString(game->getBoardSize()) << endl;
-    cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
+    // cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << move.cartesianToPolarString(game->getBoardSize()) << endl;
+    // cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
 }
 
 void Player::playGame()
 {
-    cerr << "In playGame " << player << endl;
+    // cerr << "In playGame " << player << endl;
 
     if (player < 0)
     {
@@ -413,17 +413,17 @@ void Player::playGame()
         // cerr << !doQuiesence << endl;
         qui = 0;
         Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, true).second;
-        cerr << "qui: " << qui << endl;
+        // cerr << "qui: " << qui << endl;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
         // game->displayHexagonalBoard();
-        cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
+        // cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
         // cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
 
         // Update game strategy after each iteration
         updateGameStrategy(currTime);
-        cerr << endl;
+        // cerr << endl;
 
         // Get other player's move and play
         playOpponentMove();
@@ -483,5 +483,5 @@ void Player::updateGameStrategy(double beginTime)
     }
     // minimaxDepth = 1;
 
-    cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << " Quiesence: " << !finalPhase << " | movesPlayed: " << movesPlayed << endl;
+    // cerr << "Remaining Time: " << timeRemaining << " | Depth: " << minimaxDepth << " Quiesence: " << !finalPhase << " | movesPlayed: " << movesPlayed << endl;
 }

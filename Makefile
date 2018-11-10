@@ -2,7 +2,7 @@ all: main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp
 	  g++ --std=c++11 -O3 -o main main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
 
 clean: 
-	del -f *.exe
+	rm -rf main
 
 opti: main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp
 	  g++ --std=c++11 -O3 -o dSwnnUeAB main.cpp Player.cpp Game.cpp Move.cpp MicroMove.cpp Utility.cpp 
