@@ -37,7 +37,6 @@ class Player
     double timeRemaining;
     int movesPlayed; // Moves played by our player
     bool finalPhase; // Time about to end, stop depth 4
-    double cutOff; // Limit after which moves cutoff in moveRing
     
     /**
      * Returns the best Move to play from the current game state for current player

@@ -23,7 +23,6 @@ Player::Player(int playerType, int numRings, int seqLen, double totalTime, doubl
     timeSpent = (time(NULL) - startTime);
     timeRemaining = timeAlloted - timeSpent;
     finalPhase = false;
-    cutOff = 1;
 }
 
 int total;
@@ -38,6 +37,7 @@ int g10000;
 int g12000;
 int g25000;
 int g50000;
+int qui;
 void updateDiff(double diff)
 {
     if (diff >= 50000)
@@ -96,10 +96,11 @@ bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha,
         double diff = abs(utility - parentUtility);
 
         // cerr << (utility - parentUtility) << " ";
-        if (!hasQuiesenced && diff >= quiesenceCutOff)
+        if (!hasQuiesenced)
         {
             // Do a Quiescence_search
             // cerr << "doing Quiensence" << endl;
+            qui++;
             return AlphaBeta(quiesenceDepth, hasMoved, onTurn, alpha, beta, parentUtility, true);
         }
         else
@@ -170,12 +171,6 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
-    // // Do away with half the moves
-    // int N = moves.size();
-    // int C = min(N, (int)(cutOff*N));
-    // if (N > 10) {
-    //     moves.erase(moves.begin()+C, moves.end());
-    // }
 
     bestAction bAction = make_pair(-INF, Move());
     bool isFirst = true;
@@ -324,6 +319,8 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
     vector<MicroMove> moves = game->getAllMoves(false);
 
     bestAction bAction = make_pair(-INF, Move());
+    if (depth <= 1)
+        hasQuiesenced = finalPhase; // If not in final phase, do quiesence
 
     // Iterate over all moves
     for (auto microMv = moves.begin(); microMv != moves.end(); microMv++)
@@ -455,19 +452,22 @@ void Player::playGame()
         // Get our move and play and then tell the opponent
         // Move ourMove = maxValue(minimaxDepth, false, -INF, INF).second;
         double utility = game->getUtility(this->player);
-        bool doQuiesence = (finalPhase) ? false : true;
-        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, !doQuiesence).second;
-        cerr << endl;
+        // bool doQuiesence = (finalPhase) ? false : true;
+        // cerr << !doQuiesence << endl;
+        qui = 0;
+        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, true).second;
+        cerr << "qui: " << qui << endl;
         // cerr << total << " " << g200 << " " << g500 << " " << g1000 << " " << g1500 << " " << g3000 << " " << g5000 << " " << g7500 << " " << g10000 << " " << g12000 << " " << g25000 << " " << g50000 << endl;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
         // game->displayHexagonalBoard();
         cerr << "Player " << (game->getPlayerToMove() * -1) << " played: " << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
-        cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
+        // cerr << "Player " << game->getPlayerToMove() << "'s turn: ";
 
         // Update game strategy after each iteration
         updateGameStrategy(currTime);
+        cerr << endl;
 
         // Get other player's move and play
         playOpponentMove();
@@ -490,6 +490,11 @@ void Player::updateGameStrategy(double beginTime)
         //     // In initial stages => play fast
         //     minimaxDepth = 3;
     }
+    else if (movesPlayed - game->getNumRings() <= 2)
+    {
+        // Initial 2 moves are slow, so less depth
+        minimaxDepth = 2;
+    }
     else if (movesPlayed < 9)
     {
         minimaxDepth = 3;
@@ -508,14 +513,6 @@ void Player::updateGameStrategy(double beginTime)
     {
         // Time is money
         minimaxDepth = 2;
-    }
-
-    if (movesPlayed <= 8) {
-        cutOff = 0.6;
-    } else if (movesPlayed <= 10) {
-        cutOff = 0.8;
-    } else {
-        cutOff = 1.0;
     }
 
     int depth4Cutoff = 50;
