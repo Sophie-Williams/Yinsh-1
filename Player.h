@@ -42,11 +42,11 @@ class Player
      * hasMovedYet means in the calling history has the concerned player played a ring moving game
      */
 
-    bestAction AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta);
-    bestAction AlphaBetaPlaceRing(int depth, bool hasMoved, int onTurn, double alpha, double beta);
-    bestAction AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta);
-    bestAction AlphaBetaRemoveRow(int depth, bool hasMoved, int onTurn, double alpha, double beta);
-    bestAction AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta);
+    bestAction AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced);
+    bestAction AlphaBetaPlaceRing(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced);
+    bestAction AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced);
+    bestAction AlphaBetaRemoveRow(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced);
+    bestAction AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced);
     
     void applyMove(const MicroMove &move, char type,  bool flipState=true);
     void deapplyMove(const MicroMove &move, char type, int finalState, bool flipState = true);

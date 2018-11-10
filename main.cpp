@@ -13,7 +13,6 @@ int main(int argc, char **argv)
 {
     // testerUtility();
     // return 0;
-
     int player;
     int N, K;
     double timeLeft;

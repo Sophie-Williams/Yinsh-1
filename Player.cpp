@@ -24,14 +24,69 @@ Player::Player(int playerType, int numRings, int seqLen, double totalTime, doubl
     timeRemaining = timeAlloted - timeSpent;
 }
 
-bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta)
+int total;
+int g200;
+int g500;
+int g1000;
+int g1500;
+int g3000;
+int g5000;
+int g7500;
+int g10000;
+int g12000;
+int g25000;
+int g50000;
+void updateDiff(double diff) {
+    if (diff >= 50000) g50000++;
+    if (diff >= 25000) g25000++;
+    if (diff >= 12000) {
+        cerr << diff << " ";
+        g12000++;
+    }
+    if (diff >= 10000) g10000++;
+    if (diff >= 7500) g7500++;
+    if (diff >= 5000) g5000++;
+    if (diff >= 3000) g3000++;
+    if (diff >= 1500) g1500++;
+    if (diff >= 1000) g1000++;
+    if (diff >= 500) g500++;
+    if (diff >= 200) g200++;
+    total++;
+}
+
+bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     int currentState = game->getGameState();
+    double quiesenceCutOff = 10000; // DEPENDS ON GAME->GETUTILITY() parameters. Change it if you change them
+    int quiesenceDepth = 1;
+
     // if terminal state then exit
-    if (depth <= 0 || game->isTerminalState())
-    {
+    // if (depth <= 0 || game->isTerminalState())
+    // {
+    //     double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
+    //     return make_pair(utility, Move());
+    // }
+    if (game->isTerminalState()) {
         double utility = (currentState == 1) ? game->computeRingUtility() : game->getUtility(onTurn);
         return make_pair(utility, Move());
+    } else if (depth <= 0) {
+        if (currentState == 1) {
+            double utility = game->computeRingUtility();
+            return make_pair(utility, Move());
+        }
+        double utility = game->getUtility(onTurn);
+        double diff = abs(utility - parentUtility);
+
+        // cerr << (utility - parentUtility) << " ";
+        if (!hasQuiesenced && diff>= quiesenceCutOff) {
+            // Do a Quiescence_search
+            cerr << "doing Quiensence" << endl;
+            return AlphaBeta(quiesenceDepth, hasMoved, onTurn, alpha, beta, parentUtility, true);
+        } else {
+            // A quiet node
+            updateDiff(diff);
+            return make_pair(utility, Move());
+        }
     }
 
     // compute best move to play
@@ -39,22 +94,22 @@ bestAction Player::AlphaBeta(int depth, bool hasMoved, int onTurn, double alpha,
     {
     case 1:
         // Place a ring
-        return AlphaBetaPlaceRing(depth, hasMoved, onTurn, alpha, beta);
+        return AlphaBetaPlaceRing(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
     case 2:
         // Move a ring
         // Place ring stage is going to be over => see more deeply
         // minimaxDepth = 4;
-        return AlphaBetaMoveRing(depth, hasMoved, onTurn, alpha, beta);
+        return AlphaBetaMoveRing(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
     case 3:
         // Remove a row
-        return AlphaBetaRemoveRow(depth, hasMoved, onTurn, alpha, beta);
+        return AlphaBetaRemoveRow(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
     case 4:
         // Remove a ring
-        return AlphaBetaRemoveRing(depth, hasMoved, onTurn, alpha, beta);
+        return AlphaBetaRemoveRing(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
     }
 }
 
-bestAction Player::AlphaBetaPlaceRing(int depth, bool hasMoved, int onTurn, double alpha, double beta)
+bestAction Player::AlphaBetaPlaceRing(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
@@ -90,7 +145,7 @@ bestAction Player::AlphaBetaPlaceRing(int depth, bool hasMoved, int onTurn, doub
     return bAction;
 }
 
-bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta)
+bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
@@ -114,14 +169,14 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
             bestAction ourAction;
             if (isFirst)
             {
-                ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
+                ourAction = AlphaBeta(depth, true, onTurn, alpha, beta, parentUtility, hasQuiesenced);
             }
             else
             {
-                ourAction = AlphaBeta(depth, true, onTurn, alpha, alpha + 1);
+                ourAction = AlphaBeta(depth, true, onTurn, alpha, alpha + 1, parentUtility, hasQuiesenced);
                 if (ourAction.first > alpha && ourAction.first < beta)
                 {
-                    ourAction = AlphaBeta(depth, true, onTurn, alpha, beta);
+                    ourAction = AlphaBeta(depth, true, onTurn, alpha, beta, parentUtility, hasQuiesenced);
                 }
             }
             // ourAction = AlphaBeta(depth, true, -1 * onTurn, alpha, alpha + 1);
@@ -148,16 +203,16 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
             bestAction oppAction;
             if (isFirst)
             {
-                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha, parentUtility, hasQuiesenced);
                 oppAction.first *= -1;
             }
             else
             {
-                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha);
+                oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -alpha - 1, -alpha, parentUtility, hasQuiesenced);
                 oppAction.first *= -1;
                 if (oppAction.first > alpha && oppAction.first < beta)
                 {
-                    oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+                    oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha, parentUtility, hasQuiesenced);
                     oppAction.first *= -1;
                 }
                 // else {
@@ -192,7 +247,7 @@ bestAction Player::AlphaBetaMoveRing(int depth, bool hasMoved, int onTurn, doubl
     return bAction;
 }
 
-bestAction Player::AlphaBetaRemoveRow(int depth, bool hasMoved, int onTurn, double alpha, double beta)
+bestAction Player::AlphaBetaRemoveRow(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
@@ -213,7 +268,7 @@ bestAction Player::AlphaBetaRemoveRow(int depth, bool hasMoved, int onTurn, doub
             cerr << "Failure in applying move Player::maxValueRemoveRow\n";
         game->setGameState(4); // Remove a Ring
 
-        bestAction ourAction = AlphaBeta(depth, hasMoved, onTurn, alpha, beta);
+        bestAction ourAction = AlphaBeta(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
         if (ourAction.first > bAction.first)
         {
             bAction.first = ourAction.first;
@@ -236,7 +291,7 @@ bestAction Player::AlphaBetaRemoveRow(int depth, bool hasMoved, int onTurn, doub
     return bAction;
 }
 
-bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta)
+bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, double alpha, double beta, double parentUtility, bool hasQuiesenced)
 {
     // Get all moves
     vector<MicroMove> moves = game->getAllMoves(false);
@@ -252,7 +307,7 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
         if (game->getGameState() == 3 || !hasMoved)
         {
             // have to remove a row or move a ring is not done before
-            bestAction ourAction = AlphaBeta(depth, hasMoved, onTurn, alpha, beta);
+            bestAction ourAction = AlphaBeta(depth, hasMoved, onTurn, alpha, beta, parentUtility, hasQuiesenced);
 
             // if better
             if (ourAction.first > bAction.first)
@@ -270,7 +325,7 @@ bestAction Player::AlphaBetaRemoveRing(int depth, bool hasMoved, int onTurn, dou
         else if (game->getGameState() == 2)
         {
             game->flipPlayerToMove();
-            bestAction oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha);
+            bestAction oppAction = AlphaBeta(depth - 1, hasMoved, -1 * onTurn, -beta, -alpha, parentUtility, hasQuiesenced);
             oppAction.first *= -1;
 
             if (oppAction.first > bAction.first)
@@ -368,9 +423,14 @@ void Player::playGame()
     {
         double currTime = time(NULL);
 
+        total = g200 = g500 = g1000 = g1500 = g3000 = g5000 = g7500 = g10000 = g12000 = g25000 = g50000 = 0;
+
         // Get our move and play and then tell the opponent
         // Move ourMove = maxValue(minimaxDepth, false, -INF, INF).second;
-        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF).second;
+        double utility = game->getUtility(this->player);
+        Move ourMove = AlphaBeta(minimaxDepth, false, this->player, -INF, INF, utility, false).second;
+        cerr << endl;
+        cerr << total << " " << g200 << " " << g500 << " " << g1000 << " " << g1500 << " " << g3000 << " " << g5000 << " " << g7500 << " " << g10000 << " " << g12000 << " " << g25000 << " " << g50000 << endl;
         game->makeMove(ourMove);
         cout << ourMove.cartesianToPolarString(game->getBoardSize()) << endl;
 
