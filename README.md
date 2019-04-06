@@ -1,9 +1,7 @@
 # Yinsh
 
-Data structure: array[i][j] where j = 0, 1, 2, 3... and i = A, B, C...    
+AI bot for Yinsh, an abstract strategy board game.
 
-## To-do list:  
-1. minimax with alpha-beta pruning  
-2. neighbor function  
-3. heuristic evaluation function  
+## Gameplay and Run Instructions
 
+Refer here: https://github.com/NikhilGupta1997/Yinsh-AI
